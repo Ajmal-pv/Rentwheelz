@@ -12,7 +12,7 @@ hostId: { type: mongoose.Schema.Types.ObjectId, ref: 'Host', required: true },
   yearOfManufacture: { type: String, required: true },
   transmissionType: { type: String, enum: ['manual', 'automatic'] },
   monthsOfRenting: { type: String, required: true },
-  image:{type:Array,required:true}
+  images: [{ type: String }]
   
 });
 

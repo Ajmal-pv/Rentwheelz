@@ -9,14 +9,9 @@ export const hostVerify=(typeOtp,name,email,password,mobile,id)=>{
     return api.post('/verifyHost',{otp:typeOtp,name,email,password,mobile,id:id },{withCredentials:true})
 }
 
- export const addCar=(payload,host)=>{
-    const config = {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      };
+ export const addCar=(values,downloadedUrls,host)=>{
     
-    return api.post('/Addcar',{payload,host},config,{withCredentials:true})
+    return api.post('/Addcar',{values,downloadedUrls,host},{withCredentials:true})
 }
 export const login=(email,password)=>{
     return  api.post('/signin', { email, password }, { withCredentials: true })

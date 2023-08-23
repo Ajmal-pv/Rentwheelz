@@ -2,6 +2,8 @@ const Admin = require("../models/admin");
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
+const Car = require('../models/car')
+const Host = require('../models/host')
 
 
 
@@ -66,6 +68,38 @@ adminCheck:async(req,res)=>{
     res.status(200).send({ status:true });
   } catch (error) {
    
+    res.status(500).send("Server Error");
+  }
+},
+cars:async(req,res)=>{
+  try {
+  const cars= await Car.find().populate('hostId');
+
+  if(cars){
+   res.send({carData:cars,cars:true})
+  }else{
+  res.send({cars:false})
+  }
+
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
+  }
+},
+hosts:async(req,res)=>{
+  try {
+  const hosts= await Host.find()
+
+  if(hosts){
+   res.send({hostData:hosts,hosts:true})
+  }else{
+  res.send({hosts:false})
+  }
+
+    
+  } catch (error) {
+    console.log(error.message);
     res.status(500).send("Server Error");
   }
 }

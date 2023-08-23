@@ -7,6 +7,8 @@ import { adminLogin, adminLogout } from '../store/adminSlice'
 import Cookies from 'js-cookie'
 import { Navigate } from 'react-router-dom';
 import AdminHome from '../Pages/Admin/AdminHome'
+import AdminCar from '../Pages/Admin/AdminCar'
+import AdminHost from '../Pages/Admin/AdminHost'
 
 
 
@@ -61,6 +63,8 @@ function Admin() {
         <Route path='/login' element={ admin ? <Navigate to={'/admin'}/> : <AdminLoginPage/>}/>
        
         <Route path='/home' element={ admin ? <AdminHome/> : <Navigate to={'/admin/login'}/> }/>
+        <Route path='/car' element={ admin ? <AdminCar/> : <Navigate to={'/admin/login'}/> }/>
+        <Route path='/host' element={ admin ? <AdminHost/> : <Navigate to={'/admin/login'}/> }/>
        
       </Routes>
     </div>

@@ -7,10 +7,10 @@ import { useDispatch } from "react-redux";
 import { hostLogin } from "../../../store/hostSlice";
 import { addCar } from "../../../services/host-service";
 import axios from "axios";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { app, storage } from "../../firebase/config";
 
 function CarForm() {
-  
-
   const navigate = useNavigate();
   const [selectedImages, setSelectedImages] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
@@ -21,10 +21,9 @@ function CarForm() {
     setSelectedImages(files);
   };
 
-
   const dispatch = useDispatch();
   const location = useLocation();
-
+  const downloadUrls = [];
   const queryParams = new URLSearchParams(location.search);
 
   const host = queryParams.get("id");
@@ -41,43 +40,42 @@ function CarForm() {
     transmissionType: "manual",
     monthsOfRenting: "",
   };
-  
+
   const onSubmit = async (values) => {
     console.log("Selected Images:", selectedImages);
-  console.log("Form Values:", values);
+    const imageFiles = selectedImages;
+
+    const uploadPromises = imageFiles.map((imageFile) => {
+      const storageRef = ref(storage, "images/" + imageFile.name);
+    
+      return uploadBytes(storageRef, imageFile)
+        .then((snapshot) => getDownloadURL(storageRef))
+        .then((url) => {
+          downloadUrls.push(url);
+        });
+    });
+
+   Promise.all(uploadPromises)
+  .then(() => {
+        
+        return  addCar(values, downloadUrls, host)})
+            .then((res) => {
+              if (res.data.status) {
+                if (queryParams.get("login")) {
+                  dispatch(hostLogin());
+                  navigate("/host");
+                } else {
+                  navigate("/host/login");
+                }
+              }
+            })
+            .catch((error) => {
+              toast.error(error.message);
+            });
+        
+    };
+
   
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
-  const formData = new FormData();
-      selectedImages.forEach((image) => {
-        formData.append("images", image);
-      });
-
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        formData
-      );
-      const uploadedImageUrls = response.data.resources.map(
-        (resource) => resource.secure_url
-      );
-      setImageUrls(uploadedImageUrls);
-
-      console.log(uploadedImageUrls);
-    addCar(formData, host)
-      .then((res) => {
-        if (res.data.status) {
-          if (queryParams.get("login")) {
-            dispatch(hostLogin());
-            navigate("/host");
-          } else {
-            navigate("/host/login");
-          }
-        }
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
   const validationSchema = Yup.object({
     licenseNumber: Yup.string().required("Required"),
     carModel: Yup.string().required("Required"),
@@ -348,35 +346,36 @@ function CarForm() {
               </div>
             </div>
             <div className="mb-4">
-        <label htmlFor="images" className="block text-sm font-medium">
-          Upload Images:
-        </label>
-        <input
-          type="file"
-          id="images"
-          name="images"
-          multiple
-          onChange={handleImageChange}
-          className="mt-1 p-2 border rounded w-full"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium">Image Previews:</label>
-        <div className="flex space-x-2">
-          {selectedImages.map((file, index) => (
-            <div key={index} className="relative">
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`Preview ${index}`}
-                className="w-24 h-24 object-cover border rounded"
+              <label htmlFor="images" className="block text-sm font-medium">
+                Upload Images:
+              </label>
+              <input
+                type="file"
+                id="images"
+                name="images"
+                multiple
+                onChange={handleImageChange}
+                className="mt-1 p-2 border rounded w-full"
               />
-             
             </div>
-          ))}
-          </div>
-          </div>
-        
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium">
+                Image Previews:
+              </label>
+              <div className="flex space-x-2">
+                {selectedImages.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index}`}
+                      className="w-24 h-24 object-cover border rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="flex justify-center mt-4">
               <button
                 type="submit"
