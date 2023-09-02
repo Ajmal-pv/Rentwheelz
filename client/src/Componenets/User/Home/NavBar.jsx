@@ -1,37 +1,63 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { Link,  useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import  Cookies from 'js-cookie'
 import { userLogin, userLogout } from "../../../store/userSlice";
 
 const Navbar = () => {
-  const dispatch =useDispatch()
-  const navigate=useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [logout,setLogout] = useState(false)
- 
+  const [logout, setLogout] = useState(false);
+  const [host, setHost] = useState(false);
+  const [user,setUser]=useState(false)
 
-
-  const user = useSelector((state) => state.user.authorized);
-  const handleLogout=()=>{
-
-    setLogout(true)
-   
-  }
+  
+  const handleLogout = () => {
+    setHost(false)
+    setLogout(true);
+    
+  
+  };
   useEffect(() => {
+   
     if (logout) {
 
-    Cookies.remove("user")
-    dispatch(userLogout())
-    localStorage.removeItem('userData')
-    navigate('/');
-    setIsDropdownOpen(!isDropdownOpen) 
-     
+      localStorage.removeItem("userToken");
+
+      localStorage.removeItem("userData");
+      dispatch(userLogout());
+      setUser(false)
+      navigate("/");
+      setIsDropdownOpen(!isDropdownOpen);
     }
   }, [logout]);
+  
+  const localUser=localStorage.getItem('userToken')
+useEffect(()=>{
+  if(localUser){
+  setUser(true)
+}
+
+  const userDataJSON = localStorage.getItem("userData");
+  if (userDataJSON) {
+    const userData = JSON.parse(userDataJSON);
+
+    const hostData=userData.host
+   
+    if (hostData) {
+      setHost(true);
+    }
+    
+  }
+ 
+},[])
+
+
+
+ 
   return (
     <nav className="bg-gray-800">
       <div className="container mx-auto px-4">
@@ -46,12 +72,33 @@ const Navbar = () => {
             {/* Dropdown Content */}
             {isDropdownOpen && (
               <div className="absolute mt-2 w-32 mr-1 md:w-48 bg-gray-800 border rounded-lg shadow-lg py-2">
-                <Link to="/cars" className="block px-4 py-2 text-white hover:bg-gray-700">
+                <Link
+                  to="/cars"
+                  className="block px-4 py-2 text-white hover:bg-gray-700"
+                >
                   Cars
                 </Link>
-                <Link to="/host/become-host" className="block px-4 py-2 text-white hover:bg-gray-700">
-                  Become Host
-                </Link>
+
+                 {host ? (
+                  
+                  
+                  <Link
+                    to="/host/login"
+                    className="block px-4 py-2 text-white hover:bg-gray-700"
+                  >
+                    Host
+                  </Link>
+                 
+                ) : (
+                 
+                  <Link
+                    to="/host/become-host"
+                    className="block px-4 py-2 text-white hover:bg-gray-700"
+                  >
+                    Become Host
+                  </Link>
+                 
+                )}
               </div>
             )}
           </div>
@@ -71,9 +118,27 @@ const Navbar = () => {
                 <Link to="/cars" className="text-white hover:text-gray-300">
                   Cars
                 </Link>
-                <Link to="/host/become-host" className="text-white hover:text-gray-300">
-                  Become Host
-                </Link>
+
+                {host ? (
+                  
+                  
+                  <Link
+                    to="/host/login"
+                    className=" text-white hover:text-gray-300"
+                  >
+                    Host
+                  </Link>
+                  
+                ) : (
+                  
+                  <Link
+                    to="/host/become-host"
+                    className=" text-white hover:text-gray-300"
+                  >
+                    Become Host
+                  </Link>
+                  
+                )}
               </div>
             </div>
           </div>
@@ -90,19 +155,31 @@ const Navbar = () => {
               <div className="right-0 absolute mt-2 w-32 mr-1 md:w-48 bg-gray-800 border rounded-lg shadow-lg py-2">
                 {user ? (
                   <>
-                    <Link to="/profile"  className="block px-4 py-2 text-white hover:bg-gray-700">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-white hover:bg-gray-700"
+                    >
                       Profile
                     </Link>
-                    <Link  onClick={handleLogout} className="block px-4 py-2 text-white hover:bg-gray-700">
+                    <Link
+                      onClick={handleLogout}
+                      className="block px-4 py-2 text-white hover:bg-gray-700"
+                    >
                       Logout
                     </Link>
                   </>
                 ) : (
                   <>
-                    <Link to="/signup" className="block px-4 py-2 text-white hover:bg-gray-700">
+                    <Link
+                      to="/signup"
+                      className="block px-4 py-2 text-white hover:bg-gray-700"
+                    >
                       Sign Up
                     </Link>
-                    <Link to="/login" className="block px-4 py-2 text-white hover:bg-gray-700">
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 text-white hover:bg-gray-700"
+                    >
                       Login
                     </Link>
                   </>

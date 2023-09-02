@@ -18,7 +18,7 @@ const createAxiosInstance = (baseURL) => {
 };
 
 const attachToken = (req, tokenName) => {
-  let authToken =Cookies.get(tokenName);
+  let authToken =localStorage.getItem(tokenName);
   if (authToken) {
 
     req.headers.Authorization = `Bearer ${authToken}`;
@@ -29,7 +29,7 @@ const attachToken = (req, tokenName) => {
 // User Axios Instance
 export const userAxiosInstance = createAxiosInstance(userBaseURL);
 userAxiosInstance.interceptors.request.use(async (req) => {
-  const modifiedReq = attachToken(req, 'user');
+  const modifiedReq = attachToken(req, 'userToken');
   return modifiedReq;
 })
 
@@ -38,7 +38,7 @@ userAxiosInstance.interceptors.request.use(async (req) => {
 // Admin Axios Instance
 export const adminAxiosInstance = createAxiosInstance(adminBaseURL);
 adminAxiosInstance.interceptors.request.use(async (req) => {
-  const modifiedReq = attachToken(req, 'admin');
+  const modifiedReq = attachToken(req, 'AdminToken');
   return modifiedReq;
 })
 
@@ -46,6 +46,6 @@ adminAxiosInstance.interceptors.request.use(async (req) => {
 
 export const hostAxiosInstance=createAxiosInstance(hostBaseURL);
 hostAxiosInstance.interceptors.request.use(async(req)=>{
-  const modifiedReq=attachToken(req,'host');
+  const modifiedReq=attachToken(req,'hostToken');
   return modifiedReq
 })

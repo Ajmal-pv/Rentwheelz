@@ -25,9 +25,8 @@ const AdminLogin = () => {
     login(values).then((res) => {
       const result = res.data.adminLOGIN;
       if (result.status) {
-        localStorage.setItem("name", result.name);
-        localStorage.setItem("token", result.token);
-        localStorage.setItem("id", result.id);
+       
+        localStorage.setItem("AdminToken", result.token);
 
         dispatch(adminLogin());
 

@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const cloudinary = require('../configeration/cloudinaryConfig');
+const User = require('../models/user');
+
 
 
 const vonage = new Vonage({
@@ -96,16 +98,15 @@ module.exports = {
   },
   carAdd: async (req, res) => {
     try {
-
-      const { values,  downloadedUrls, host } = req.body
+     console.log(req.body,'hereee');
+      const { values,downloadedUrls,host,downloadDocumentUrls } = req.body
+      console.log(host);
 
       const hostFind = await Host.findOne({ _id: host })
 
       if (!hostFind) return res.status(404).json({ message: 'Host not found' });
 
 
-     
-      console.log(req.body);
       
      
       const newCar = new Car({
@@ -122,14 +123,20 @@ module.exports = {
         transmissionType: values.transmissionType,
         monthsOfRenting: values.monthsOfRenting,
         images: downloadedUrls,
+        RcImages:downloadDocumentUrls
         
       });
       const carData = await newCar.save();
       
 
-     
+     const user= await User.findOne({email:hostFind.email})
+     if(user){
+      user.is_host=true
+      user.save()
+     }
 
       const hostData = await Host.findByIdAndUpdate({ _id: host }, { $set: { is_car: true } }, { new: true })
+
 
       return res.json({
         status: true,
@@ -152,7 +159,8 @@ module.exports = {
         token: null,
         name: null,
         id: null,
-        host: null
+        host: null,
+        user:false
       };
       const { email, password } = req.body
       const host = await Host.findOne({ email });
@@ -180,12 +188,6 @@ module.exports = {
         HostLOGIN.host = host;
 
 
-        // Set the JWT as a cookie to be sent with subsequent requests for authentication
-        res.cookie("host", token, {
-          httpOnly: false,
-          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        });
-
         res.status(200).send({ HostLOGIN });
       } else {
 
@@ -209,9 +211,61 @@ module.exports = {
 
       if (!hostFind) return res.status(400).send({ message: 'User not found' });
 
-      res.status(200).send({ status: true });
+      res.status(200).send({ status: true,hostData:hostFind,hostid:host_id });
     } catch (error) {
 
+      res.status(500).send("Server Error");
+    }
+  },
+  hostCars:async(req,res)=>{
+    try {
+      const hostId= req.query.id
+      const hostCars= await Car.find({hostId:hostId})
+      console.log(hostCars,'hiiiii');
+      if(hostCars){
+        res.send({status:true,Cars:hostCars})
+      }else{
+        res.send({status:false})
+      }
+      
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  carDetails:async(req,res)=>{
+    try {
+      const carId=req.query.id
+      const carInfo= await Car.findOne({_id:carId})
+      console.log(carInfo);
+      if(carInfo){
+        res.send({carData:carInfo,car:true})
+       }else{
+       res.send({car:false})
+       }
+  
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  carRent:async(req,res)=>{
+    try {
+      const {carId,startDate,endDate}=req.body
+      const car= await Car.findOne({_id:carId})
+      if(car){
+        car.rentalStartDate=startDate
+        car.rentalEndDate=endDate
+        car.isCarRented=true
+        const carData= car.save()
+        if(carData){
+          res.send({status:true,carData:carData})
+        }else{
+          res.send({status:false})
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
       res.status(500).send("Server Error");
     }
   }

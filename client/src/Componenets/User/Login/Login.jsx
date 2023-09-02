@@ -33,7 +33,10 @@ function Login() {
             id: result.id,
             email: result.email,
             mobile: result.mobile,
+            host:result.host
           }));
+          
+          localStorage.setItem('userToken',result.token)
 
           dispatch(userLogin({userId:id1}));
 

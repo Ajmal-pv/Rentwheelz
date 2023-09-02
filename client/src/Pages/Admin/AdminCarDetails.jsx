@@ -4,10 +4,14 @@ import CarDetails from '../../Componenets/Admin/carPage/CarDetails'
 
 function AdminCarDetails() {
   return (
-    <div>
+   
+     <div>
+    
+     <div className="flex h-screen bg-gray-100">
       <Sidebar/>
-      <CarDetails/>
-    </div>
+     <CarDetails/>
+     </div>
+   </div>
   )
 }
 

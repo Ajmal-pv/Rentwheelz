@@ -27,6 +27,9 @@ const hostSchema = new mongoose.Schema({
     image:{
         type:Array,
         required:true
+    },
+    is_user:{
+        type:Boolean
     }
 
 })

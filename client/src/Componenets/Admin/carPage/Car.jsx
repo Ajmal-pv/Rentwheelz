@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { car } from '../../../services/admin-Service'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Car() {
+  const navigate = useNavigate()
+  const [allcars,setAllCars] = useState([])
     const [cars,setCars] = useState([])
+    
+    const[blocked,setBlocked]=useState([])
+    const[approved,setApproved]=useState([])
+    const[pending,setPending]=useState([])
     const [selectedHost, setSelectedHost] = useState(null);
+    const [apiCall,setApiCall]=useState(false)
+
+   
 
   const openHostPopup = (host) => {
     setSelectedHost(host);
@@ -13,15 +22,40 @@ function Car() {
   const closeHostPopup = () => {
     setSelectedHost(null);
   };
+
    useEffect(() => {
+    
     car().then((res)=>{
+      
       if(res.data.cars){
-  setCars(res.data.carData)
+        setCars(res.data.carData)
+  setAllCars(res.data.carData)
+  setBlocked(res.data.carBlocked)
+  setApproved(res.data.carApproved)
+  setPending(res.data.carPending)
+
       }else{
-        setCars({})
+        setCars([])
+        setApproved([])
+        setBlocked([])
+        setPending([])
       }
     })
-   }, [cars])
+   }, [apiCall])
+
+
+   const blockedCars=()=>{
+    setCars(blocked)
+  }
+  const approvedCars=()=>{
+    setCars(approved)
+  }
+  const pendingCars=()=>{
+    setCars(pending)
+  }
+  const AllCars=()=>{
+    setCars(allcars)
+  }
    
     
   return (
@@ -30,10 +64,40 @@ function Car() {
       <main className="flex-1 p-4 overflow-x-hidden">
         {/* Your main content goes here */}
         <div className=' transition-colors'>
-        <h1 className="text-2xl font-semibold  mb-8 mt-6 border-gray-800 ">CARS</h1>
+        <h1 className="text-2xl font-semibold  mb-4 mt-6 border-gray-800 ">CARS</h1>
+        <div className='flex justify-end '>
+        <button
+       onClick={AllCars}
+        className="bg-black hover:bg-black  text-white  font-bold py-2 m-2 px-4 rounded"
+        
+      >
+        All
+      </button>
+        <button
+       onClick={pendingCars}
+        className="bg-yellow-500 hover:bg-yellow-600  text-white  font-bold py-2 m-2 px-4 rounded"
+        
+      >
+        Pendings
+      </button>
+      <button
+       onClick={approvedCars}
+        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 m-2 rounded"
+      >
+        Approved
+      </button>
+      <button
+       onClick={blockedCars}
+        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded m-2"
+      >
+        Blocked 
+      </button>
+     
         </div>
+        </div>
+       
         {/* Other components and content */}
-        <div className="overflow-x-auto mt-16">
+        <div className="overflow-x-auto mt-6">
       <table className="min-w-full rounded-lg overflow-hidden bg-white border border-gray-300">
         <thead>
           <tr>
@@ -42,6 +106,7 @@ function Car() {
             <th className="py-2 px-4 border-b border-gray-300 text-left">Car Brand</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">Car Model</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">licenseNumber</th>
+            <th className="py-2 px-4 border-b border-gray-300 text-left">Verification</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">Details</th>
 
 
@@ -72,11 +137,13 @@ function Car() {
             <td className="py-2 px-4 border-b border-gray-300">{car.carModel}</td>
            
             <td className="py-2 px-4 border-b border-gray-300">{car.licenseNumber}</td>
+            <td className={`py-2 px-4 border-b border-gray-300 ${car.approved === 'Approved' ? 'text-green-600' : car.approved === 'Rejected' ? 'text-red-600' : car.approved === 'Blocked' ? 'text-red-600' : 'text-yellow-600'}`}>{car.approved}</td>
             
             <td className="py-2 px-4 border-b border-gray-300">
-              <Link>
-              details 
-              </Link>
+              {/* <Link to={`/cardetails?id=${car._id}`} className="text-blue-500 font-bold" >
+              Details 
+              </Link> */}
+              <button className='text-blue-600' onClick={()=>{navigate(`cardetails?id=${car._id}`)}}>Details</button>
             </td>
           </tr>
         ))}

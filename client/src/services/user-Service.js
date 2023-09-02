@@ -35,3 +35,6 @@ export const forgotPasswordOtp = (values, user) => {
 export const newPassword = (values, user) => {
   return api.post("/password-set", { values, user }, { withCredentials: true });
 };
+export const cars =()=>{
+  return  api.get('/cars')
+}

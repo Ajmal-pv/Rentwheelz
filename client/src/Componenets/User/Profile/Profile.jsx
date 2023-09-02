@@ -13,7 +13,7 @@ function Profile() {
   if(userId){
     api.post('verifyToken')
       .then((response) => {
-        console.log(response);
+        
          if(response.data.status){
        
            setUser(response.data.user)
@@ -23,7 +23,7 @@ function Profile() {
         
       })
       .catch((error) => {
-       
+       console.log(error);
         console.log(error.message);
       });
 
@@ -72,61 +72,9 @@ function Profile() {
                     className="mt-1  p-2 border rounded w-[100%]"
                   />
                 </div>
-                <div className="mb-4 w-[50%]">
-                  <label htmlFor="email" className="block text-sm font-medium">
-                    Email:
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    defaultValue={user.email}
-                    className="mt-1 p-2 border rounded  w-[100%]"
-                  />
-                </div>
-                <div className="mb-4 w-[50%]">
-                  <label htmlFor="mobile" className="block text-sm font-medium">
-                    Mobile:
-                  </label>
-                  <input
-                    type="text"
-                    id="mobile"
-                    name="mobile"
-                    defaultValue={user.mobile}
-                    className="mt-1 p-2 border rounded  w-[100%]"
-                  />
-                </div>
+               
 
-                <div className="mb-4 w-[50%]">
-                  <label
-                    htmlFor="licenseFront"
-                    className="block text-sm font-medium"
-                  >
-                    Upload License Front:
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="licenseFront"
-                    name="licenseFront"
-                    className="mt-1 p-2 border rounded w-[100%]"
-                  />
-                </div>
-                <div className="mb-4 w-[50%]">
-                  <label
-                    htmlFor="licenseBack"
-                    className="block text-sm font-medium"
-                  >
-                    Upload License Back:
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="licenseBack"
-                    name="licenseBack"
-                    className="mt-1 p-2 border rounded w-[100%]"
-                  />
-                </div>
+               
                 <div className="flex justify-center">
                   <button
                     type="submit"

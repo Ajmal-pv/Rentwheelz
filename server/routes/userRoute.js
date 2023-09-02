@@ -11,6 +11,8 @@ user_route.post('/signin',userController.userSignin)
 user_route.post('/verifyToken',userAuth,userController.userCheck)
 user_route.post('/forgot-password',userController.forgotPassword)
 
+user_route.get('/cars',userController.getCars)
+
 user_route.post('/otp-checking',userController.forgotOtp)
 user_route.post('/password-set',userController.passwordSet)
 

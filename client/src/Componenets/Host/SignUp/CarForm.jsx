@@ -13,6 +13,7 @@ import { app, storage } from "../../firebase/config";
 function CarForm() {
   const navigate = useNavigate();
   const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
 
   const handleImageChange = (e) => {
@@ -20,10 +21,16 @@ function CarForm() {
     console.log("Selected Images:", files); // Debugging log
     setSelectedImages(files);
   };
+  const handleDocumentChange = (e) => {
+    const files = Array.from(e.target.files);
+    console.log("Selected Doc:", files); // Debugging log
+    setSelectedDocuments(files);
+  };
 
   const dispatch = useDispatch();
   const location = useLocation();
   const downloadUrls = [];
+  const downloadDocumentUrls=[];
   const queryParams = new URLSearchParams(location.search);
 
   const host = queryParams.get("id");
@@ -44,8 +51,18 @@ function CarForm() {
   const onSubmit = async (values) => {
     console.log("Selected Images:", selectedImages);
     const imageFiles = selectedImages;
+    const documentFiles=selectedDocuments
 
-    const uploadPromises = imageFiles.map((imageFile) => {
+    // const uploadPromises = imageFiles.map((imageFile) => {
+    //   const storageRef = ref(storage, "images/" + imageFile.name);
+    
+    //   return uploadBytes(storageRef, imageFile)
+    //     .then((snapshot) => getDownloadURL(storageRef))
+    //     .then((url) => {
+    //       downloadUrls.push(url);
+    //     });
+    // });
+    const uploadImagePromises = imageFiles.map((imageFile) => {
       const storageRef = ref(storage, "images/" + imageFile.name);
     
       return uploadBytes(storageRef, imageFile)
@@ -54,6 +71,18 @@ function CarForm() {
           downloadUrls.push(url);
         });
     });
+    
+    const uploadDocumentPromises = documentFiles.map((documentFile) => {
+      const storageRef = ref(storage, "documents/" + documentFile.name);
+    
+      return uploadBytes(storageRef, documentFile)
+        .then((snapshot) => getDownloadURL(storageRef))
+        .then((url) => {
+          downloadDocumentUrls.push(url);
+        });
+    });
+    
+    const uploadPromises = [...uploadImagePromises, ...uploadDocumentPromises];
 
    Promise.all(uploadPromises)
   .then(() => {
@@ -345,7 +374,7 @@ function CarForm() {
                 </div>
               </div>
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label htmlFor="images" className="block text-sm font-medium">
                 Upload Images:
               </label>
@@ -365,6 +394,66 @@ function CarForm() {
               </label>
               <div className="flex space-x-2">
                 {selectedImages.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index}`}
+                      className="w-24 h-24 object-cover border rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div> */}
+             <div className="mb-4">
+              <label htmlFor="images" className="block text-sm font-medium">
+                Upload car Images:
+              </label>
+              <input
+                type="file"
+                id="images"
+                name="images"
+                multiple
+                onChange={handleImageChange}
+                className="mt-1 p-2 border rounded w-full"
+              />
+            </div>
+
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium">
+                Image Previews:
+              </label>
+              <div className="flex space-x-2">
+                {selectedImages.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index}`}
+                      className="w-24 h-24 object-cover border rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="images" className="block text-sm font-medium">
+                Upload Registration certificate:
+              </label>
+              <input
+                type="file"
+                id="documents"
+                name="documents"
+                multiple
+                onChange={handleDocumentChange}
+                className="mt-1 p-2 border rounded w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">
+                RC Previews:
+              </label>
+              <div className="flex space-x-2">
+                {selectedDocuments.map((file, index) => (
                   <div key={index} className="relative">
                     <img
                       src={URL.createObjectURL(file)}

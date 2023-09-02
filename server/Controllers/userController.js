@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const Car = require('../models/car');
+const Host = require('../models/host');
 
 // const vonage = new Vonage({
 //   apiKey: '095abb2b',
@@ -128,19 +130,26 @@ module.exports = {
         name: null,
         id: null,
         email: null,
-        mobile: null
+        mobile: null,
+        host:false,
+        token:null
       };
       const { email, password } = req.body;
 
       // Check if the user with the provided email exists
       const user = await User.findOne({ email });
+     
 
       if (!user) {
 
         userLOGIN.message = 'Your email is not registered';
         return res.send({ userLOGIN });
       }
-
+     
+   if(user.is_blocked ){
+    userLOGIN.message = 'Your Account is blocked';
+        return res.send({ userLOGIN });
+   }
 
       const isMatch = await bcrypt.compare(password, user.password);
 
@@ -151,19 +160,20 @@ module.exports = {
           expiresIn: "30d",
         });
 
+        if(user.is_host){
+          userLOGIN.host=true
+        }
+
         userLOGIN.status = true;
 
         userLOGIN.id = user._id;
         userLOGIN.name = user.name;
         userLOGIN.email = user.email;
         userLOGIN.mobile = user.mobile
+        userLOGIN.token=token
 
 
-        // Set the JWT as a cookie to be sent with subsequent requests for authentication
-        res.cookie("user", token, {
-          httpOnly: false,
-          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        });
+      
 
         res.status(200).send({ userLOGIN });
       } else {
@@ -184,8 +194,10 @@ module.exports = {
       const user_id = req.user.id;
 
       const userFind = await User.findOne({ _id: user_id });
-
+      
       if (!userFind) return res.status(400).send({ message: 'User not found' });
+
+      if(userFind.is_blocked) return res.status(400).send({ message: 'User is blocked' }); 
 
       res.status(200).send({ status: true,
                             user:userFind });
@@ -317,5 +329,25 @@ module.exports = {
       console.log(error.message);
       res.status(500).send("Server Error");
     }
+  },
+  getCars:async(req,res)=>{
+    try {
+      const cars = await Car.find({
+        is_subscribed: false,
+        approved: "Approved",
+        isCarRented: true,
+        approved: { $ne: "Blocked" }
+      });
+      
+        if(cars){
+         return res.send({status:true,cars:cars})}
+         
+         
+         
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+    }
   }
-};
+

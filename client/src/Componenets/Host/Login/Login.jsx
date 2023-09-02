@@ -27,13 +27,18 @@ function Login() {
     login(email, password)
       .then((res) => {
         const result = res.data.HostLOGIN;
-        const { is_car,  _id } = result.host;
+        const { is_car} = result.host;
 
         const login = "login";
 
         if (result.status && is_car) {
+        
+          dispatch(hostLogin({hostId:result.host._id}));
+          localStorage.setItem('hostToken',result.token);
+          localStorage.setItem('hostId',result.id);
+          
           navigate("/host");
-          dispatch(hostLogin());
+
         } else if (result.status) {
           navigate(`/host/carForm?id=${_id}&login=${login}`);
         } else {

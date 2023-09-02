@@ -4,8 +4,13 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const Car = require('../models/car')
 const Host = require('../models/host')
+require('dotenv').config();
+const nodemailer = require('nodemailer');
+const User = require('../models/user')
 
 
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
 
 module.exports={
 adminSignin:async(req,res)=>{
@@ -15,7 +20,8 @@ adminSignin:async(req,res)=>{
             status:null,
             token:null,
             id:null,
-            name:null
+            name:null,
+            token:null
         }
         let {email,password}= req.body.values
         const adminFind = await Admin.findOne({email:email})
@@ -38,12 +44,7 @@ adminSignin:async(req,res)=>{
             adminLOGIN.name = adminFind.name;
            
     
-            // Set the JWT as a cookie to be sent with subsequent requests for authentication
-            res.cookie("admin", token, {
-              httpOnly: false,
-              maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-            });
-    
+           
             res.status(200).send({ adminLOGIN });
           } else {
     
@@ -73,10 +74,30 @@ adminCheck:async(req,res)=>{
 },
 cars:async(req,res)=>{
   try {
+   
   const cars= await Car.find().populate('hostId');
+  const blockedCars = cars.filter(car => car.approved === 'Blocked');
+const pendingCars = cars.filter(car => car.approved === 'Pending');
+const approvedCars = cars.filter(car => car.approved === 'Approved');
+
+const sortLatestFirst = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
+cars.sort(sortLatestFirst)
+blockedCars.sort(sortLatestFirst);
+pendingCars.sort(sortLatestFirst);
+approvedCars.sort(sortLatestFirst);
+
+cars.reverse()
+blockedCars.reverse();
+pendingCars.reverse();
+approvedCars.reverse();
+
+console.log('Blocked Cars:', blockedCars);
+console.log('Pending Cars:', pendingCars);
+console.log('Approved Cars:', approvedCars);
+  
 
   if(cars){
-   res.send({carData:cars,cars:true})
+   res.send({carData:cars,carBlocked:blockedCars,carPending:pendingCars,carApproved:approvedCars,cars:true})
   }else{
   res.send({cars:false})
   }
@@ -86,6 +107,27 @@ cars:async(req,res)=>{
     console.log(error.message);
     res.status(500).send("Server Error");
   }
+},
+carBlock:async(req,res)=>{
+try {
+  const carId=req.query.id
+  if(carId){
+    const carData= await Car.findOne({_id:carId})
+
+    if(carData){
+      carData.approved='Blocked'
+     const carSave= carData.save()
+     if(carSave){
+    res.send({carBlock:true})
+  }
+  }
+  }else{
+    res.send({carBlock:false})
+  }
+} catch (error) {
+  console.log(error.message);
+    res.status(500).send("Server Error");
+}
 },
 hosts:async(req,res)=>{
   try {
@@ -98,6 +140,149 @@ hosts:async(req,res)=>{
   }
 
     
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
+  }
+},
+users:async(req,res)=>{
+try {
+  const users=await User.find()
+  if(users){
+    res.send({userData:users,users:true})
+   }else{
+   res.send({users:false})
+   }
+} catch (error) {
+  console.log(error.message);
+  res.status(500).send("Server Error");
+}
+},
+userBlock:async(req,res)=>{
+try {
+  const {userId,reason}= req.body
+  const userFind= await User.findOne({_id:userId})
+  if(userFind){
+    userFind.is_blocked=true
+    userFind.blockReason=reason
+    const userData= userFind.save()
+   return res.send({message:'user Blocked',userBlock:true})
+  }else{
+    return res.send({userBlock:false})
+  }
+  
+
+  
+} catch (error) {
+  console.log(error.message);
+  res.status(500).send("Server Error");
+}
+},
+userUnBlock:async(req,res)=>{
+try {
+  const {userId}= req.body
+  const userFind= await User.findOne({_id:userId})
+  if(userFind){
+    userFind.is_blocked=false
+    userFind.blockReason=''
+    const userData= userFind.save()
+   return res.send({message:'user unBlocked',userUnBlock:true})
+  }else{
+    return res.send({userBlock:false,message:'error in blocking user'})
+  }
+  
+
+  
+} catch (error) {
+  console.log(error.message);
+  res.status(500).send("Server Error");
+}
+},
+carDetails:async(req,res)=>{
+  try {
+    const carId=req.query.id
+    const carInfo= await Car.findOne({_id:carId}).populate('hostId')
+    console.log(carInfo);
+    if(carInfo){
+      res.send({carData:carInfo,car:true})
+     }else{
+     res.send({car:false})
+     }
+
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
+  }
+},
+carApproval:async(req,res)=>{
+  try {
+    console.log(req.body);
+    const{carId,rentalPrice}=req.body
+    const carInfo= await Car.findOne({_id:carId}).populate('hostId')
+    if(carInfo){
+      carInfo.approved='Approved'
+      carInfo.rentalPrice=rentalPrice;
+     const updatedCar= await carInfo.save();
+     if(updatedCar){
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        },
+      });
+      const mailOptions = {
+        from: 'ajmalpv66@gmail.com',
+        to: carInfo.hostId.email,
+        subject: 'Car Verification completed',
+        text: `Your ${carInfo.licenseNumber} ${carInfo.carModel} has verfied by Admin,You are now eligible to earn up to ${rentalPrice} rps per month through renting,Log in back to RentWheelz at http://localhost:5173/host for more details.  `,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+         return res.status(500).json({ message: 'Failed to send OTP.' });
+        } else {
+          console.log('Email sent: ' + info.response);
+          res.json({ status: true, message: 'OTP sent successfully.' });
+        }
+      });
+
+      const hostData= await Host.findOne({_id:carInfo.hostId._id})
+      hostData.is_verified=true;
+      const hostSave= await hostData.save()
+     if(hostSave){
+      return res.send({update:true,message:'Database updated'})
+     }
+    }
+
+    }else{
+     return res.send({message:'Car is not in database'})
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
+  }
+},
+carReject:async(req,res)=>{
+  try {
+   
+    const {carId,rejectReason}=req.body
+   
+    const carInfo= await Car.findOne({_id:carId})
+    if(carInfo){
+      carInfo.approved='Rejected'
+      carInfo.rejectReason=rejectReason;
+     
+     const updatedCar= await carInfo.save();
+     if(updatedCar){
+     return res.send({update:true,message:'Database updated'})
+     }
+
+    }else{
+     return res.send({message:'Car is not in database'})
+    }
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Server Error");
