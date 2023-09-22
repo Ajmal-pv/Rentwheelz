@@ -38,3 +38,33 @@ export const newPassword = (values, user) => {
 export const cars =()=>{
   return  api.get('/cars')
 }
+export const Singlcar =(carId)=>{
+  return api.get(`/carDetails?id=${carId}`)
+}
+export const getCar=(carType,carPage)=>{
+  return api.get(`/specialCars?type=${carType}&car=${carPage}`)
+}
+export const getUser=(userId)=>{
+  return api.get(`/getuser?id=${userId}`)
+}
+export const orderCreation=(orderData)=>{
+  
+  return api.post('/ordercreation', {orderData} , { withCredentials: true });
+}
+
+export const callStripe = (price,product) => {
+ 
+  return api.post("/create-checkout-session", { price,product,startDate,endDate,dropOff }, { withCredentials: true });
+};
+export const datesSelected=(carId)=>{
+  return api.get(`/datesSelected?id=${carId}`)
+}
+export const profileUpdate  = (licenseUrl,profileUrl,editedMobile,editedName,userId) => {
+ 
+  return api.post("/edit-profile", { licenseUrl,profileUrl,editedMobile,editedName,userId}, { withCredentials: true });
+};
+export const getUserBooking=(userId)=>{
+  return api.get(`/userBooking?id=${userId}`)
+}
+
+

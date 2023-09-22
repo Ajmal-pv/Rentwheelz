@@ -61,6 +61,11 @@ const Sidebar = () => {
               Users
             </Link>
           </li>
+          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/bookings"]) ? "bg-slate-500" : ""}`}>
+            <Link to="/admin/bookings" className="block">
+              Bookings
+            </Link>
+          </li>
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/banner"]) ? "bg-slate-500" : ""}`}>
             <Link to="/admin/banner" className="block">
               Banners

@@ -20,6 +20,8 @@ admin_route.post('/userUnBlock',adminAuth,adminController.userUnBlock)
 admin_route.get('/cardetails',adminAuth,adminController.carDetails)
 admin_route.post('/carApproval',adminAuth,adminController.carApproval)
 admin_route.post('/carReject',adminAuth,adminController.carReject)
+admin_route.get('/carbookings',adminAuth,adminController.bookingDetails)
+
 
 
 module.exports=admin_route

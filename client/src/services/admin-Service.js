@@ -26,6 +26,10 @@ export const unblockUser =(userId)=>{
 export const carDetails=(carId)=>{
   return api.get(`/cardetails?id=${carId}`)
 }
+
+export const bookings=()=>{
+  return api.get('/carbookings')
+}
 export const carApproval=(carId,rentalPrice)=>{
   return api.post('/carApproval',{carId,rentalPrice},{ withCredentials: true })
 }

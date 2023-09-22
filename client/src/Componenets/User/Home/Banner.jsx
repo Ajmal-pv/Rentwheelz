@@ -6,16 +6,15 @@ import { Carousel } from 'react-responsive-carousel';
 function Banner() {
     
   return (
-   
-        <Carousel showArrows={false} autoPlay infiniteLoop>
-          <div>
-            <img src={image} alt="Banner 1" />
+    <div className='h-[90vh] w-full '>
+             <Carousel showArrows={false} showThumbs={false} autoPlay infiniteLoop className='h-[90vh]  bg-black '>
+          <div className='h-[90vh] overflow-hidden bg-red-500 ' >
+            <img src='/banner1.png' alt="Banner 1" className='overflow-hidden'  />
           </div>
-          <div>
-            <img src='' alt="Banner 2" />
-          </div>
+          
           {/* Add more slides as needed */}
         </Carousel>
+        </div>
   )
 }
 

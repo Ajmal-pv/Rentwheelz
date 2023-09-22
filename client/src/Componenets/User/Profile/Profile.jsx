@@ -1,96 +1,354 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { getUser, profileUpdate } from "../../../services/user-Service";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { app, storage } from "../../firebase/config";
+import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../../store/alertSlice";
+import { useNavigate } from "react-router-dom";
 
-import { userAxiosInstance  as api } from "../../../axios/Axios";
-
-
-function Profile() {
-    const userId = useSelector((state) => state.user.userId)
-    const [user,setUser] = useState({})
-  
+const Profile = () => {
+  const dispatch=useDispatch()
+  const navigate=useNavigate()
+  const [user, setUser] = useState([]);
+  const [update, setUpdate] = useState(null);
+  const userDataJSON = localStorage.getItem("userData");
+  const userData = JSON.parse(userDataJSON);
+  const userId = userData.id;
   useEffect(() => {
-    
-  if(userId){
-    api.post('verifyToken')
-      .then((response) => {
-        
-         if(response.data.status){
-       
-           setUser(response.data.user)
+    getUser(userId).then((res) => {
+      setUser(res.data);
+    });
+  }, [update]);
+  const profileImageInputRef = useRef(null);
+  const licenseImageInputRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-        }
-   
+  const [profileImage, setProfileImage] = useState(null);
+  const [editedName, setEditedName] = useState(null);
+  const [editedMobile, setEditedMobile] = useState(null);
+  const [licenseImage, setLicenseImage] = useState(null);
+  
+
+  const [profileUrl, setProfileUrl] = useState([]);
+  const [licenseUrl, setLicenseUrl] = useState([]);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setLicenseImage(null);
+    setProfileImage(null);
+    setEditedMobile(null);
+    setEditedName(null);
+    setIsEditing(false);
+  };
+
+  const handleSaveClick = () => {
+    dispatch(showLoading())
+  
+    const uploadProfileImage = () => {
+      if (profileImage) {
         
+        const imageFile = profileImage
+        
+        const storageRef = ref(storage, "images/" + imageFile.name);
+  
+        return uploadBytes(storageRef, imageFile)
+          .then((snapshot) => getDownloadURL(storageRef))
+          .then((url) => {
+           profileUrl.push(url)
+          })
+          .catch((error) => {
+          
+            if (error.response && error.response.status === 500) {
+              dispatch(hideLoading())
+              // Handle the 500 internal server error by redirecting to the error page
+              navigate('/serverError');
+            } else {
+              // Handle other errors here
+              console.error("Error uploading images:", error);
+              dispatch(hideLoading());
+              throw error; // Propagate the error
+            }
+          })
+      } else {
+        return Promise.resolve(); // No profile image to upload
+      }
+    };
+  
+    const uploadLicenseImage = () => {
+      if (licenseImage) {
+       
+        const imageFile = licenseImage
+        const storageRef = ref(storage, "images/" + imageFile.name);
+  
+        return uploadBytes(storageRef, imageFile)
+          .then((snapshot) => getDownloadURL(storageRef))
+          .then((url) => {
+            
+            licenseUrl.push(url)
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 500) {
+              dispatch(hideLoading())
+              // Handle the 500 internal server error by redirecting to the error page
+              navigate('/serverError');
+            } else {
+              // Handle other errors here
+              console.error("Error uploading images:", error);
+              dispatch(hideLoading());
+              throw error; // Propagate the error
+            }
+            
+           
+          });
+      } else {
+        return Promise.resolve(); // No license image to upload
+      }
+    };
+    const uploadPromises = [uploadLicenseImage(),uploadProfileImage()]
+    // Use Promise.all to wait for both uploads to complete
+    Promise.all(uploadPromises)
+      .then(() => {
+        
+      profileUpdate(licenseUrl[0],profileUrl[0],editedMobile,editedName,userId).then((res)=>{
+        if(res.data.user){
+         
+         
+          setUpdate(res)
+          setIsEditing(false);
+          setLicenseUrl([])
+          setProfileUrl([])
+          
+            dispatch(hideLoading())
+          
+          
+
+          
+          
+         
+        }
+        
+ 
+
+      }).catch((error)=>{
+        if (error.response && error.response.status === 500) {
+          dispatch(hideLoading())
+          // Handle the 500 internal server error by redirecting to the error page
+          navigate('/serverError');
+        } else {
+          // Handle other errors here
+          console.error("Error uploading images:", error);
+          dispatch(hideLoading());
+        }
+      })
       })
       .catch((error) => {
-       console.log(error);
-        console.log(error.message);
+        if (error.response && error.response.status === 500) {
+          dispatch(hideLoading())
+          // Handle the 500 internal server error by redirecting to the error page
+          navigate('/serverError');
+        } else {
+          // Handle other errors here
+          console.error("Error uploading images:", error);
+          dispatch(hideLoading());
+        }
       });
-
-  }
-  }, [userId])
+  };
   
-  return (
-    <div>
-      <div className="flex min-h-screen ">
-        {/* Sidebar */}
+  
+ 
+  
 
-        <div className="w-[40%] p-4 border bg-slate-200">
-          <div className="mb-4 h-[40%] bg-slate-400">
-            <img
-              src={"/default-profile.jpg"}
-              alt="Profile"
-              className="w-16 h-16 rounded-full mx-auto mb-2"
-            />
-            <p className="text-center">{user.name}</p>
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    console.log(file,'file');
+    setProfileImage(file)
+   
+  };
+
+  const handleLicenseImageChange = (e) => {
+    const file = e.target.files[0];
+    console.log(file,'file');
+    setLicenseImage(file)
+  };
+
+  const openProfileImageInput = () => {
+    profileImageInputRef.current.click();
+  };
+
+  const openLicenseImageInput = () => {
+    licenseImageInputRef.current.click();
+  };
+  const handleNameChange = (e) => {
+    setEditedName(e.target.value);
+  };
+
+  const handleMobileChange = (e) => {
+    const inputValue = e.target.value;
+
+    // Check if the input value is exactly 10 digits
+    if (/^\d{10}$/.test(inputValue)) {
+      // Update the editedMobile state if the input is valid
+      setEditedMobile(inputValue);
+    } else {
+      // Handle invalid input (e.g., show an error message)
+      // You can set an error state or display a validation message here
+      // For now, I'm just resetting editedMobile to an empty string
+      setEditedMobile("");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+        <div>
+          {/* Profile Picture */}
+
+          <div className="mb-4">
+            {isEditing ? (
+              <div>
+                {profileImage && (
+                  <img
+                    src={URL.createObjectURL(profileImage)}
+                    alt="Profile"
+                    className="w-36 h-28 rounded-full mx-auto cursor-pointer"
+                    onClick={openProfileImageInput}
+                  />
+                )}
+                {!profileImage && (
+                  <img
+                    src={
+                      user?.profileImage?.[0] ||
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="Profile"
+                    className="w-36 h-28 rounded-full mx-auto cursor-pointer"
+                    onClick={openProfileImageInput}
+                  />
+                )}
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={profileImageInputRef}
+                  onChange={handleProfileImageChange}
+                  style={{ display: "none" }}
+                />
+              </div>
+            ) : (
+              <div>
+                <img
+                  src={user?.profileImage?.[0]}
+                  alt="User Avatar"
+                  className="w-36 h-28 rounded-full mx-auto"
+                />
+              </div>
+            )}
           </div>
-          <div className=" h-[40%] border-2 rounded-lg flex p-4 flex-col ">
-            <p className="mb-2">
-              <strong>Email:</strong> {user.email}
-            </p>
-            <p className="mb-2">
-              <strong>Mobile:</strong> {user.mobile}
-            </p>
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold">{user.name}</h1>
+            <p className="text-gray-500">{user.email}</p>
           </div>
         </div>
+        <div className="mt-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold">Contact Information</h2>
+            {isEditing ? (
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={editedName || user.name}
+                onChange={handleNameChange}
+                className="mt-1 p-2 border rounded-lg w-full"
+              />
+            ) : (
+              <p>Name: {user.name}</p>
+            )}
+            {isEditing ? (
+              <input
+                type="text"
+                id="mobile"
+                name="mobile"
+                value={editedMobile || user.mobile}
+                onChange={handleMobileChange}
+                className="mt-1 p-2 border rounded-lg w-full"
+              />
+            ) : (
+              <p>Phone: {user.mobile}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold">License Image</h2>
+            {isEditing ? (
 
-        {/* Edit Profile Section */}
-        <div className=" w-full flex flex-col items-center  p-10 border ">
-          <h2 className="text-xl font-semibold  mb-4">Edit Profile</h2>
-          
-            <form className="flex flex-col items-center justify-center w-full ">
-              <div className=" w-[100%] h-[95%] flex flex-col justify-center items-center">
-                <div className=" mb-4 w-[50%]">
-                  <label htmlFor="email" className="block text-sm font-medium">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    defaultValue={user.name}
-                    className="mt-1  p-2 border rounded w-[100%]"
-                  />
-                </div>
-               
+              <div>
+                {licenseImage &&(
+                <img
+                src={URL.createObjectURL(licenseImage)}
+                  className="w-96 h-52 m-6 mx-auto cursor-pointer"
+                  onClick={openLicenseImageInput}
+                />)}
+                {!licenseImage &&(
+                   <img
+                   src={ user?.LicenseImage?.[0]}
+                   className=" w-96 h-52  m-6 mx-auto cursor-pointer"
+                   onClick={openLicenseImageInput}
+                 />
+                )}
 
-               
-                <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600 transition duration-300 ease-in-out"
-                  >
-                    Save Changes
-                  </button>
-                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={licenseImageInputRef}
+                  onChange={handleLicenseImageChange}
+                  style={{ display: "none" }}
+                />
               </div>
-            </form>
-         
+            ) : (
+              <div>
+                <img
+                  src={user?.LicenseImage?.[0]}
+                  alt="License"
+                  className="w-96 h-52 mx-auto m-6"
+                />
+              </div>
+            )}
+          </div>
+          
+        </div>
+
+        <div className="text-center mt-4">
+          {isEditing ? (
+            <div>
+              <button
+                onClick={handleSaveClick}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg mr-2"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancelClick}
+                className="px-4 py-2 bg-gray-300 rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleEditClick}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+              Edit Profile
+            </button>
+          )}
         </div>
       </div>
     </div>
-   
   );
-}
+};
 
 export default Profile;

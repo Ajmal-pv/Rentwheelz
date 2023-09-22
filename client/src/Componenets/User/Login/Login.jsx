@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { userLogin } from "../../../store/userSlice";
 
 import { userAxiosInstance as api } from "../../../axios/Axios";
+import { RadiusBottomrightOutlined } from "@ant-design/icons";
 
 
 function Login() {
@@ -37,6 +38,7 @@ function Login() {
           }));
           
           localStorage.setItem('userToken',result.token)
+          localStorage.setItem('userId',result.id)
 
           dispatch(userLogin({userId:id1}));
 
@@ -61,14 +63,14 @@ function Login() {
       <section className="bg-blue gray-50">
         <div className="flex justify-center items-center h-screen w-full lg:w-4/12 px-4 mx-auto pt-6">
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
-            <div className="rounded-t mb-0 px-6 py-6">
+            <div className="rounded-t shadow-lg-t mb-0 px-6 py-6">
               <div className="text-center mb-3">
-                <h6 className="text-blueGray-500 text-sm font-bold">
-                  Sign in with
+                <h6 className="text-blueGray-500 text-xl font-bold">
+                  LOGIN
                 </h6>
               </div>
              
-              <hr className="mt-6 border-b-1 border-blueGray-300" />
+             
             </div>
             <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
              
@@ -122,7 +124,7 @@ function Login() {
                     <label className="inline-flex items-center cursor-pointer">
                       <span className="ml-2 text-sm font-semibold text-blueGray-600">
                         {" "}
-                        <Link to={'/forgot-password'} style={{ color: "blue" }  } >
+                        <Link to={'/forgot-password'} style={{ color: "blue" }  } className=" hover:underline ml-2" >
                           Forgot Password
                         </Link>
                       </span>
@@ -130,19 +132,16 @@ function Login() {
                   </div>
                   <div>
                     <label className="inline-flex items-center cursor-pointer">
-                      <span className="ml-2 text-sm font-semibold text-blueGray-600">
+                      <span className=" text-sm font-semibold text-blueGray-600">
                         {" "}
-                        Don't have an account?{" "}
-                        <a
-                          style={{ color: "blue" }}
-                          onClick={() => {
-                            navigate("/signup");
-                          }}
-                          href=""
+                        Don't have an account ?
+                        <Link
+                         to={'/signup'} style={{ color: "blue" }  }
+                         className="text-blue-600 hover:underline ml-2"
                         >
-                          {" "}
-                          Signup
-                        </a>
+                          
+                          Sign Up
+                        </Link>
                       </span>
                     </label>
                   </div>
@@ -150,9 +149,9 @@ function Login() {
                 <div className="text-center mt-6">
                   <button
                     type="submit"
-                    className="bg-blue-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                    className="bg-gray-950 hover:bg-gray-700 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   >
-                    Sign In
+                    LogIn
                   </button>
                 </div>
                 <Toaster />
@@ -165,4 +164,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Login

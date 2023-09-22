@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
   is_host:{
     type:Boolean,
     default:false
-  }
+  },
+  profileImage:[{ type: String }],
+  
+  LicenseImage:[{ type: String }]
+
 });
 module.exports = mongoose.model("User", userSchema);

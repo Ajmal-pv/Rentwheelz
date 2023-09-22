@@ -60,7 +60,7 @@ const ForgotPasswordForm = () => {
                   id="mobile"
                   name="email"
                   className="w-full border rounded px-3 py-2"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter your email"
                 />
                 <ErrorMessage
                   name="email"
@@ -75,8 +75,18 @@ const ForgotPasswordForm = () => {
               >
                 {isSubmitting ? "Submitting..." : "Reset Password"}
               </button>
+              <button
+            type="button"
+            onClick={() => {
+             navigate('/login')
+            }}
+            className="w-full mt-2 bg-gray-300 text-gray-600 rounded py-2"
+          >
+            Back to Login
+          </button>
             </Form>
           )}
+          
         </Formik>
       </div>
       <Toaster />

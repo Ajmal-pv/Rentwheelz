@@ -27,20 +27,20 @@ function Login() {
     login(email, password)
       .then((res) => {
         const result = res.data.HostLOGIN;
-        const { is_car} = result.host;
-
+        const { is_car} = result.host
         const login = "login";
+       
 
         if (result.status && is_car) {
         
-          dispatch(hostLogin({hostId:result.host._id}));
+          dispatch(hostLogin({hostId:result.id}));
           localStorage.setItem('hostToken',result.token);
           localStorage.setItem('hostId',result.id);
           
           navigate("/host");
 
         } else if (result.status) {
-          navigate(`/host/carForm?id=${_id}&login=${login}`);
+          navigate(`/host/carform?id=${result.id}&login=${login}`)
         } else {
           toast.error(result.message);
         }

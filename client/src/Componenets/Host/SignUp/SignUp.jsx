@@ -10,7 +10,6 @@ function SignUp() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState(0);
-  const [id, setId] = useState("");
   const [typeOtp, setTypeOtp] = useState(null);
 
   const initialValues = {
@@ -46,12 +45,11 @@ function SignUp() {
     if (typeOtp === null) return toast.error("no otp");
     const { name, email, password, mobile } = values;
 
-    hostVerify(typeOtp, name, email, password, mobile, id)
+    hostVerify(typeOtp, name, email, password, mobile)
       .then((res) => {
         if (res.data.ready) {
           const host = res.data.host._id;
-          console.log(host);
-          navigate(`/host/carForm?id=${host}`);
+          navigate(`/host/carform?id=${host}`);
         } else if (res.data.message) {
           toast.error(res.data.message);
         }
@@ -73,7 +71,7 @@ function SignUp() {
         if (res.data.status) {
           setStep(1);
         }
-        setId(res.data.id);
+       
       })
       .catch((error) => {
         console.log(error);

@@ -5,13 +5,13 @@ import { hostAxiosInstance as api } from "../axios/Axios";
 export const signUp=(email,mobile)=>{
      return api.post('/signup',{email,mobile},{withCredentials:true})
 }
-export const hostVerify=(typeOtp,name,email,password,mobile,id)=>{
-    return api.post('/verifyHost',{otp:typeOtp,name,email,password,mobile,id:id },{withCredentials:true})
+export const hostVerify=(typeOtp,name,email,password,mobile)=>{
+    return api.post('/verifyHost',{otp:typeOtp,name,email,password,mobile },{withCredentials:true})
 }
 
- export const addCar=(values,downloadedUrls,host,downloadDocumentUrls)=>{
+ export const addCar=(values,query,downloadedUrls,host,downloadDocumentUrls)=>{
     
-    return api.post('/Addcar',{values,downloadedUrls,host,downloadDocumentUrls},{withCredentials:true})
+    return api.post('/Addcar',{values,query,downloadedUrls,host,downloadDocumentUrls},{withCredentials:true})
 }
 export const RentCar=(carId,startDate,endDate)=>{
     
@@ -27,5 +27,9 @@ export const hostCar =(hostId)=>{
   }
   export const carDetails=(carId)=>{
     return api.get(`/cardetails?id=${carId}`)
+  }
+  
+  export const getHostCars=(hostId)=>{
+    return api.get(`/Bookedcars?id=${hostId}`)
   }
 

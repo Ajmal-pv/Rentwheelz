@@ -2,6 +2,8 @@ import React from'react'
 
 import NavBar from '../../Componenets/User/Home/NavBar'
 import Banner from '../../Componenets/User/Home/Banner'
+import RelatedCar from '../../Componenets/User/Home/RelatedCar'
+import Footer from '../../Componenets/User/Home/Footer'
 
 
 function HomePage() {
@@ -9,9 +11,10 @@ function HomePage() {
 
   return (
     <div>
-      <NavBar/>
-      
-
+      <NavBar />
+      <Banner />
+      <RelatedCar />
+      <Footer/>
       
     </div>
   )

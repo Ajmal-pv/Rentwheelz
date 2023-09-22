@@ -15,6 +15,6 @@ host_route.post('/signin',hostController.hostSignin)
 host_route.get('/cardetails',hostAuth,hostController.carDetails)
 host_route.get('/hostCar',hostAuth,hostController.hostCars)
 host_route.post('/rentcar',hostAuth,hostController.carRent)
-
+host_route.get('/Bookedcars',hostAuth,hostController.Bookedcars)
 
 module.exports = host_route;

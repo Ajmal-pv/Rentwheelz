@@ -9,7 +9,7 @@ import { hostCar } from '../../../services/host-service';
 
 function Car() {
   const hostId = localStorage.getItem('hostId')
-  console.log(hostId);
+  
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [callApi, setCallApi] = useState(false);
 
@@ -84,7 +84,7 @@ function Car() {
       <table className="min-w-full rounded-lg overflow-hidden bg-white border border-gray-300">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b border-gray-300 text-left">licenseNumber</th>
+            <th className="py-2 px-4 border-b border-gray-300 text-left">Registration Number</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">image</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">Car Brand</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">Car Model</th>
@@ -103,7 +103,7 @@ function Car() {
   <tbody>
         {cars.map((car) => (
           <tr key={car._id}>
-         <td className="py-2 px-4 border-b border-gray-300">{car.licenseNumber}</td>
+         <td className="py-2 px-4 border-b border-gray-300">{car.RegistrationNumber}</td>
             <td className="py-2 px-4 border-b border-gray-300">
              
                 <img src={car.images[0]} alt={`Car 1`} className="w-12 h-12 object-cover" />

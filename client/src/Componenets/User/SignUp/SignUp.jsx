@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./SignUp.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { signUp, verifyUser } from "../../../services/user-Service";
 
@@ -41,6 +41,10 @@ function SignUp() {
     confirmPassword: "",
   };
   const handleNextStep = () => {
+   
+if(!formik.values.name || !formik.values.email || !formik.values.mobile || !formik.values.password){
+return toast.error('Fill All the data before submission')
+}
     const { name, email, password, mobile } = formik.values;
     signUp(email, mobile, password, name)
       .then((res) => {
@@ -83,7 +87,7 @@ function SignUp() {
       .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     password: Yup.string()
       .required("Required!")
-      .min(6, "Password must be at least 8 characters long")
+      .min(6, "Password must be at least 6 characters long")
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one digit"
@@ -105,7 +109,7 @@ function SignUp() {
         <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
           {step === 0 && (
             <>
-              <h3 className="text-2xl font-bold text-center">Join us</h3>
+              <h3 className="text-2xl font-bold text-center">JOIN US</h3>
               <form>
                 <div className="mt-4">
                   <div>
@@ -193,30 +197,26 @@ function SignUp() {
                       )}
                   </div>
 
-                  {/* <div className="flex">
-              <button  type='submit'  disabled={!formik.isValid} className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">Create Account</button>
-            </div> */}
+                 
                   <div className="flex">
                     <button
                       type="button" // Use type="button" to prevent form submission
                       onClick={handleNextStep}
-                       // Proceed to the next step (step 1)
-                      className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+                      disabled={!formik.isValid}
+                      className="w-full px-6 py-2 mt-4 text-white bg-gray-900 rounded-lg hover:bg-gray-950"
                     >
-                      create Account
+                      CREATE ACCOUNT
                     </button>
                   </div>
-                  <div className="mt-6 text-grey-dark">
-                    Already have an account?
-                    <a
-                      onClick={() => {
-                        navigate("/login");
-                      }}
-                      className="text-blue-600 hover:underline"
-                      href="#"
+                  <div className="mt-6  text-grey-dark">
+                    Already have an account ?
+                    <Link
+                     to={'/login'}
+                      className="text-blue-600 hover:underline ml-2"
+                      
                     >
-                      Log in
-                    </a>
+                      Login
+                    </Link>
                   </div>
                 </div>
               </form>
@@ -281,4 +281,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default SignUp

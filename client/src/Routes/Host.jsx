@@ -12,12 +12,16 @@ import Hostcar from "../Pages/Host/Hostcar";
 import HostCarDetail from "../Pages/Host/HostCarDetail";
 import PublicRoute from "../Componenets/Host/Routes/PublicRoute";
 import PrivateRoute from "../Componenets/Host/Routes/PrivateRoute";
+import HostCarform2 from "../Pages/Host/HostCarform2";
+import HostBooking from "../Pages/Host/HostBooking";
+import NotFound from "../Pages/error/NotFound";
 
 function Host() {
   return (
     <div>
  <Routes>
   {/* Public Routes */}
+  <Route path="/carform" element={<HostCarform2 />} />
      <Route path="/" element={<PublicRoute />}>
           <Route path="/login" element={<HostLogin />} />
           <Route path="/become-host" element={<HostSignup />} />
@@ -29,7 +33,17 @@ function Host() {
           <Route path="/cars" element={<Hostcar />} />
           <Route path="/cardetails" element={<HostCarDetail />} />
           <Route path="/carForm" element={<HostCarform />} />
+          <Route path="/carForm" element={<HostCarform />} />
+          <Route path="/bookings" element={<HostBooking />} />
+
      </Route>
+     <Route
+        path="*"
+        element={
+          <NotFound redirectTo="/host/home" />
+        }
+      />
+
   </Routes>
     </div>
   );

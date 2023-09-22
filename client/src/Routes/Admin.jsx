@@ -13,6 +13,9 @@ import AdminCarDetails from "../Pages/Admin/AdminCarDetails";
 import AdminUser from "../Pages/Admin/AdminUser";
 import PublicRoute from "../Componenets/Admin/Routes/PublicRoute";
 import PrivateRoute from "../Componenets/Admin/Routes/PrivateRoute";
+import AdminBanner from "../Pages/Admin/AdminBanner";
+import AdminBooking from "../Pages/Admin/AdminBooking";
+import NotFound from "../Pages/error/NotFound";
 
 function Admin() {
   return (
@@ -32,7 +35,17 @@ function Admin() {
           <Route path="/host" element={<AdminHost />} />
           <Route path="/cardetails" element={<AdminCarDetails />} />
           <Route path="/user" element={<AdminUser />} />
+          <Route path="/banner" element={<AdminBanner />} />
+          
+          <Route path="/bookings" element={<AdminBooking />} />
         </Route>
+        <Route
+        path="*"
+        element={
+          <NotFound redirectTo="/admin/home" />
+        }
+      />
+
       </Routes>
     </div>
   );

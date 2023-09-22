@@ -51,6 +51,11 @@ function Sidebar() {
               Cars
             </Link>
           </li>
+          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/bookings"]) ? "bg-slate-500" : ""}`}>
+            <Link to="/host/bookings" className="block text-l">
+              Bookings
+            </Link>
+          </li>
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/messages"]) ? "bg-slate-500" : ""}`}>
             <Link to="" className="block text-l">
               Messages

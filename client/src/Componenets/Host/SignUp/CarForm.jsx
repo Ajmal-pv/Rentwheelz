@@ -9,8 +9,11 @@ import { addCar } from "../../../services/host-service";
 import axios from "axios";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, storage } from "../../firebase/config";
+import {GoogleMap,useLoadScript,MarkerF} from '@react-google-maps/api'
+
 
 function CarForm() {
+   
   const navigate = useNavigate();
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
@@ -35,9 +38,11 @@ function CarForm() {
 
   const host = queryParams.get("id");
 
+
   const initialValues = {
-    licenseNumber: "",
+   
     carModel: "",
+    discription:'',
     city: "",
     fuelType: "petrol",
     kmDriven: "",
@@ -46,6 +51,8 @@ function CarForm() {
     yearOfManufacture: "",
     transmissionType: "manual",
     monthsOfRenting: "",
+    carColor:'',
+    RegistrationNumber:''
   };
 
   const onSubmit = async (values) => {
@@ -90,12 +97,9 @@ function CarForm() {
         return  addCar(values, downloadUrls, host)})
             .then((res) => {
               if (res.data.status) {
-                if (queryParams.get("login")) {
-                  dispatch(hostLogin());
-                  navigate("/host");
-                } else {
+               
                   navigate("/host/login");
-                }
+                
               }
             })
             .catch((error) => {
@@ -104,19 +108,21 @@ function CarForm() {
         
     };
 
-  
-  const validationSchema = Yup.object({
-    licenseNumber: Yup.string().required("Required"),
-    carModel: Yup.string().required("Required"),
-    city: Yup.string().required("Required"),
-    fuelType: Yup.string().required("Required"),
-    kmDriven: Yup.string().required("Required"),
-    carBrand: Yup.string().required("Required"),
-    carVariant: Yup.string().required("Required"),
-    yearOfManufacture: Yup.string().required("Required"),
-    transmissionType: Yup.string().required("Required"),
-    monthsOfRenting: Yup.string().required("Required"),
-  });
+    const validationSchema = Yup.object({
+      RegistrationNumber:Yup.string().required("Required"),
+      carColor: Yup.string().required("Required"),
+      discription: Yup.string().required("Required"),
+      carModel: Yup.string().required("Required"),
+      city: Yup.string().required("Required"),
+      fuelType: Yup.string().required("Required"),
+      kmDriven: Yup.string().required("Required"),
+      carBrand: Yup.string().required("Required"),
+      carVariant: Yup.string().required("Required"),
+      yearOfManufacture: Yup.string().required("Required"),
+      transmissionType: Yup.string().required("Required"),
+      monthsOfRenting: Yup.string().required("Required"),
+    });
+ 
 
   const formik = useFormik({
     initialValues,
@@ -125,8 +131,8 @@ function CarForm() {
   });
   return (
     <div>
-      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-xl p-6 bg-white rounded shadow-md">
+      <div className="bg-gray-400 min-h-screen  flex items-center justify-center">
+        <div className="w-full max-w-xl p-6 bg-gray-100 rounded shadow-md">
           <h2 className="text-2xl font-semibold mb-4">
             Car and Rental Details
           </h2>
@@ -139,24 +145,67 @@ function CarForm() {
                     htmlFor="licenseNumber"
                     className="block text-sm font-medium"
                   >
-                    License Number:
+                    Registration Number
                   </label>
                   <input
                     type="text"
                     id="licenseNumber"
-                    name="licenseNumber"
-                    defaultValue={formik.values.licenseNumber}
+                    name="RegistrationNumber"
+                    defaultValue={formik.values.RegistrationNumber}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     required
                     className="mt-1 p-2 border rounded w-full"
                   />
-                  {formik.errors.licenseNumber &&
-                    formik.touched.licenseNumber && (
-                      <div className="error">{formik.errors.licenseNumber}</div>
+                  {formik.errors.RegistrationNumber &&
+                    formik.touched.RegistrationNumber && (
+                      <div className="error">{formik.errors.RegistrationNumber}</div>
                     )}
                 </div>
 
+                <div className="mb-4">
+                  <label
+                    htmlFor="licenseNumber"
+                    className="block text-sm font-medium"
+                  >
+                    Discription:
+                  </label>
+                  <input
+                    type="text"
+                    id="licenseNumber"
+                    name="discription"
+                    defaultValue={formik.values.discription}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.discription &&
+                    formik.touched.discription && (
+                      <div className="error">{formik.errors.discription}</div>
+                    )}
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="carModel"
+                    className="block text-sm font-medium"
+                  >
+                    Car color:
+                  </label>
+                  <input
+                    type="text"
+                    id="carModel"
+                    name="carColor"
+                    defaultValue={formik.values.carColor}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.carColor && formik.touched.carColor && (
+                    <div className="error">{formik.errors.carColor}</div>
+                  )}
+                </div>
                 <div className="mb-4">
                   <label
                     htmlFor="carModel"
@@ -224,28 +273,7 @@ function CarForm() {
                   )}
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="kmDriven"
-                    className="block text-sm font-medium"
-                  >
-                    Kilometers Driven:
-                  </label>
-                  <input
-                    defaultValue={formik.values.kmDriven}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="number"
-                    id="kmDriven"
-                    name="kmDriven"
-                    min="0"
-                    required
-                    className="mt-1 p-2 border rounded w-full"
-                  />
-                  {formik.errors.kmDriven && formik.touched.kmDriven && (
-                    <div className="error">{formik.errors.kmDriven}</div>
-                  )}
-                </div>
+               
               </div>
 
               <div>
@@ -371,6 +399,28 @@ function CarForm() {
                         {formik.errors.monthsOfRenting}
                       </div>
                     )}
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="kmDriven"
+                    className="block text-sm font-medium"
+                  >
+                    Kilometers Driven:
+                  </label>
+                  <input
+                    defaultValue={formik.values.kmDriven}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    type="number"
+                    id="kmDriven"
+                    name="kmDriven"
+                    min="0"
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.kmDriven && formik.touched.kmDriven && (
+                    <div className="error">{formik.errors.kmDriven}</div>
+                  )}
                 </div>
               </div>
             </div>

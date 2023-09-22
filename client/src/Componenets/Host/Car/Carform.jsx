@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,9 +12,22 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { hostLogin } from "../../../store/hostSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import CarLocation from "../../User/Car/CarLocation";
+
 
 
 function NewCarForm({ isOpen, onClose }) {
+
+
+
+  const [query, setQuery] = useState('');
+
+  
+  const handleLocationChange = (newLocation) => {
+    setQuery(newLocation);
+  };
+
+
     const host = localStorage.getItem('hostId')
     const navigate = useNavigate();
   const [selectedImages, setSelectedImages] = useState([]);
@@ -30,7 +43,16 @@ function NewCarForm({ isOpen, onClose }) {
     const files = Array.from(e.target.files);
   
     // Define the allowed image types
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+      'image/tiff',
+      'image/svg+xml',
+      // Add more image types here as needed
+    ];
   
     // Filter out files that are not valid image types
     const areAllValid = files.every((file) => allowedTypes.includes(file.type));
@@ -85,12 +107,46 @@ function NewCarForm({ isOpen, onClose }) {
   const downloadDocumentUrls=[];
   const queryParams = new URLSearchParams(location.search);
 
- 
+
+  // const handleScriptLoad = (updateQuery, autoCompleteRef) => {
+  //   autoComplete = new window.google.maps.places.Autocomplete(
+  //     autoCompleteRef.current,
+  //     {
+  //       // types: ["(cities)"],
+  //       componentRestrictions: { country: "IN" },
+  //     }
+  //   );
+
+  //   autoComplete.addListener("place_changed", () => {
+  //     handlePlaceSelect(updateQuery);
+  //   });
+  // };
+  // const handlePlaceSelect = async (updateQuery) => {
+  //   const addressObject = await autoComplete.getPlace();
+
+  //   const query = addressObject.formatted_address;
+  //   updateQuery(query);
+  //   console.log({ query });
+
+  //   const latLng = {
+  //     lat: addressObject?.geometry?.location?.lat(),
+  //     lng: addressObject?.geometry?.location?.lng(),
+  //   };
+
+  //   console.log({ latLng });
+  //   setSelectedLocation(latLng);
+  // };
+  // useEffect(() => {
+  //   loadScript(
+  //     `https://maps.googleapis.com/maps/api/js?key=AIzaSyDe-UudexGTA40PFaMX6BLxuhiabSsXvYY&libraries=places`,
+  //     () => handleScriptLoad(setQuery, autoCompleteRef)
+  //   );
+  // }, []);
 
   const initialValues = {
-    licenseNumber: "",
+   
     carModel: "",
-    city: "",
+    discription:'',
     fuelType: "petrol",
     kmDriven: "",
     carBrand: "",
@@ -98,6 +154,8 @@ function NewCarForm({ isOpen, onClose }) {
     yearOfManufacture: "",
     transmissionType: "manual",
     monthsOfRenting: "",
+    carColor:'',
+    RegistrationNumber:''
   };
 
   const onSubmit = async (values) => {
@@ -150,7 +208,7 @@ function NewCarForm({ isOpen, onClose }) {
    Promise.all(uploadPromises)
   .then(() => {
         
-        return  addCar(values, downloadUrls, host,downloadDocumentUrls)})
+        return  addCar(values,query, downloadUrls, host,downloadDocumentUrls)})
             .then((res) => {
                 
               if (res.data.status) {
@@ -168,9 +226,10 @@ function NewCarForm({ isOpen, onClose }) {
 
   
   const validationSchema = Yup.object({
-    licenseNumber: Yup.string().required("Required"),
+    RegistrationNumber:Yup.string().required("Required"),
+    carColor: Yup.string().required("Required"),
+    discription: Yup.string().required("Required"),
     carModel: Yup.string().required("Required"),
-    city: Yup.string().required("Required"),
     fuelType: Yup.string().required("Required"),
     kmDriven: Yup.string().required("Required"),
     carBrand: Yup.string().required("Required"),
@@ -204,24 +263,66 @@ function NewCarForm({ isOpen, onClose }) {
                     htmlFor="licenseNumber"
                     className="block text-sm font-medium"
                   >
-                    License Number:
+                    Registration Number:
                   </label>
                   <input
                     type="text"
                     id="licenseNumber"
-                    name="licenseNumber"
-                    defaultValue={formik.values.licenseNumber}
+                    name="RegistrationNumber"
+                    defaultValue={formik.values.RegistrationNumber}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     required
                     className="mt-1 p-2 border rounded w-full"
                   />
-                  {formik.errors.licenseNumber &&
-                    formik.touched.licenseNumber && (
-                      <div className="error">{formik.errors.licenseNumber}</div>
+                  {formik.errors.RegistrationNumber &&
+                    formik.touched.RegistrationNumber && (
+                      <div className="error">{formik.errors.RegistrationNumber}</div>
                     )}
                 </div>
-
+                <div className="mb-4">
+                  <label
+                    htmlFor="licenseNumber"
+                    className="block text-sm font-medium"
+                  >
+                    Discription:
+                  </label>
+                  <input
+                    type="text"
+                    id="licenseNumber"
+                    name="discription"
+                    defaultValue={formik.values.discription}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.discription &&
+                    formik.touched.discription && (
+                      <div className="error">{formik.errors.discription}</div>
+                    )}
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="carModel"
+                    className="block text-sm font-medium"
+                  >
+                    Car color:
+                  </label>
+                  <input
+                    type="text"
+                    id="carModel"
+                    name="carColor"
+                    defaultValue={formik.values.carColor}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.carColor && formik.touched.carColor && (
+                    <div className="error">{formik.errors.carColor}</div>
+                  )}
+                </div>
                 <div className="mb-4">
                   <label
                     htmlFor="carModel"
@@ -244,7 +345,7 @@ function NewCarForm({ isOpen, onClose }) {
                   )}
                 </div>
 
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label htmlFor="city" className="block text-sm font-medium">
                     City:
                   </label>
@@ -252,17 +353,28 @@ function NewCarForm({ isOpen, onClose }) {
                     type="text"
                     id="city"
                     name="city"
-                    defaultValue={formik.values.city}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
+                    ref={autoCompleteRef}
+                  
+                    onChange={(event)=>{
+                      setQuery(event.target.value)
+                    }}
+                    value={query}
                     required
                     className="mt-1 p-2 border rounded w-full"
                   />
-                  {formik.errors.city && formik.touched.city && (
-                    <div className="error">{formik.errors.city}</div>
-                  )}
-                </div>
+                 
+                </div> */}
 
+               <div className="mb-4">
+               <label
+                    htmlFor="fuelType"
+                    className="block text-sm font-medium"
+                  >
+                   City
+                  </label>
+                <CarLocation onLocationChange={handleLocationChange}/>
+
+                 </div>
                 <div className="mb-4">
                   <label
                     htmlFor="fuelType"
@@ -279,6 +391,7 @@ function NewCarForm({ isOpen, onClose }) {
                     required
                     className="mt-1 p-2 border rounded w-full"
                   >
+                    <option >Select</option>
                     <option defaultValue="petrol">Petrol</option>
                     <option defaultValue="diesel">Diesel</option>
                     <option defaultValue="electric">Electric</option>
@@ -289,48 +402,37 @@ function NewCarForm({ isOpen, onClose }) {
                   )}
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="kmDriven"
-                    className="block text-sm font-medium"
-                  >
-                    Kilometers Driven:
-                  </label>
-                  <input
-                    defaultValue={formik.values.kmDriven}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="number"
-                    id="kmDriven"
-                    name="kmDriven"
-                    min="0"
-                    required
-                    className="mt-1 p-2 border rounded w-full"
-                  />
-                  {formik.errors.kmDriven && formik.touched.kmDriven && (
-                    <div className="error">{formik.errors.kmDriven}</div>
-                  )}
-                </div>
+               
               </div>
 
               <div>
-                <div className="mb-4">
+              <div className="mb-4">
                   <label
-                    htmlFor="carBrand"
+                    htmlFor="fuelType"
                     className="block text-sm font-medium"
                   >
                     Car Brand:
                   </label>
-                  <input
+                  <select
                     defaultValue={formik.values.carBrand}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
-                    type="text"
                     id="carBrand"
                     name="carBrand"
                     required
                     className="mt-1 p-2 border rounded w-full"
-                  />
+                  >
+                     <option >Select</option>
+                    <option defaultValue="Maruti">Maruti</option>
+                    <option defaultValue="BMW">BMW</option>
+                    <option defaultValue="BENZ">BENZ</option>
+                    <option defaultValue="HYUNDAI">HYUNDAI</option>
+                    <option defaultValue="Toyota">Toyota</option>
+                    <option defaultValue="MG">MG</option>
+                    <option defaultValue="Kia">KIA</option>
+                    <option defaultValue="CITREON">Citreon</option>
+
+                  </select>
                   {formik.errors.carBrand && formik.touched.carBrand && (
                     <div className="error">{formik.errors.carBrand}</div>
                   )}
@@ -401,6 +503,7 @@ function NewCarForm({ isOpen, onClose }) {
                     required
                     className="mt-1 p-2 border rounded w-full"
                   >
+                    <option >Select</option>
                     <option defaultValue="manual">Manual</option>
                     <option defaultChecked="automatic">Automatic</option>
                   </select>
@@ -436,6 +539,28 @@ function NewCarForm({ isOpen, onClose }) {
                         {formik.errors.monthsOfRenting}
                       </div>
                     )}
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="kmDriven"
+                    className="block text-sm font-medium"
+                  >
+                    Kilometers Driven:
+                  </label>
+                  <input
+                    defaultValue={formik.values.kmDriven}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    type="number"
+                    id="kmDriven"
+                    name="kmDriven"
+                    min="0"
+                    required
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                  {formik.errors.kmDriven && formik.touched.kmDriven && (
+                    <div className="error">{formik.errors.kmDriven}</div>
+                  )}
                 </div>
               </div>
             </div>

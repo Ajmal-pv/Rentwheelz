@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { forgotPasswordOtp } from "../../../services/user-Service";
 
 const ForgotOTPForm = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,6 +41,7 @@ const ForgotOTPForm = () => {
 
     setSubmitting(false);
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
