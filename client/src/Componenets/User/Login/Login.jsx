@@ -47,8 +47,20 @@ function Login() {
           toast.error(result.message);
         }
       })
-      .catch((err) => {
-        toast.error(err.message);
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with an error status code
+          if (error.response.status === 500) {
+            // Internal Server Error occurred
+            navigate('/serverError')
+          } else {
+            // Handle other non-500 errors here, if needed
+            toast.error(error.response.data.message);
+          }
+        } else {
+          // The request was made but no response was received
+          toast.error('Network Error. Please check your internet connection.');
+        }
       });
 
   };
@@ -59,7 +71,7 @@ function Login() {
     validationSchema,
   });
   return (
-    <div>
+    <div  >
       <section className="bg-blue gray-50">
         <div className="flex justify-center items-center h-screen w-full lg:w-4/12 px-4 mx-auto pt-6">
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">

@@ -280,6 +280,26 @@ module.exports = {
   },
   getCars: async (req, res) => {
     try {
+      const distinctData = await Car.aggregate([
+        {
+          $group: {
+            _id: null,
+            distinctBrands: { $addToSet: '$Brand' },
+            distinctColors: { $addToSet: '$color' },
+            distinctModels: { $addToSet: '$carModel' },
+          },
+        },
+      ]);
+
+        const result = {
+          distinctBrands: distinctData[0].distinctBrands,
+          distinctColors: distinctData[0].distinctColors,
+          distinctModels: distinctData[0].distinctModels,
+        }
+  
+        
+      
+      
       const cars = await Car.find({
         is_subscribed: false,
         approved: "Approved",
@@ -287,8 +307,10 @@ module.exports = {
         approved: { $ne: "Blocked" },
       });
 
-      if (cars) {
-        return res.send({ status: true, cars: cars });
+      
+
+      if (cars && result) {
+        return res.send({ status: true, cars: cars,result:result });
       } else {
         res.status(404).json({ message: "Cars not found" });
       }
@@ -348,7 +370,9 @@ module.exports = {
   },
   stripePayment: async (req, res) => {
     try {
-      const { product, price } = req.body;
+      const { product, price,carId } = req.body;
+     
+      const cancelUrl = `http://localhost:5173/cancel?id=${carId}`;
 
       const session = await stripe.checkout.sessions.create({
         line_items: [
@@ -365,7 +389,7 @@ module.exports = {
         ],
         mode: "payment",
         success_url: "http://localhost:5173/success",
-        cancel_url: "http://localhost:5173/cancel",
+        cancel_url: cancelUrl,
       });
 
       res.json({ url: session.url });
@@ -390,7 +414,7 @@ module.exports = {
   },
   orderCreation: async (req, res) => {
     try {
-      const { startDate, endDate, carId, userId, hostId } = req.body.orderData;
+      const { startDate, endDate, carId, userId, hostId,dropOff,pickup } = req.body.orderData;
 
       console.log(startDate);
 
@@ -400,6 +424,9 @@ module.exports = {
         car: carId,
         user: userId,
         host: hostId,
+        pickupLocation:pickup,
+        dropOffLocation:dropOff,
+        deposit:3000
       });
       const orderSave = await order.save();
       if (orderSave) {

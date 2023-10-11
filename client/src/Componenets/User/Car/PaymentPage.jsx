@@ -1,38 +1,88 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Singlcar } from "../../../services/user-Service";
 
 
 
 
 const PaymentPage = () => {
-    useEffect(()=>{
-    
-    },[])
+  const location = useLocation();
+  const [car, setCar] = useState([]);
+   const searchParams = new URLSearchParams(location.search);
+   const navigate = useNavigate()
+
+   // Access individual query parameters using the get method
+   const pickupDate = searchParams.get('pd');
+   const dropDate = searchParams.get('dd');
+   const carId = searchParams.get('id');
+   const userId = searchParams.get('userid');
+   const hostId = searchParams.get('hostId');
+   const pickupLocation = searchParams.get('pickup');
+   const dropLocation = searchParams.get('drop');
+   const price = searchParams.get('price');
+   useEffect(() => {
+    if(carId){
+    Singlcar(carId)
+      .then((res) => {
+        try {
+          const carData = res.data;
+          if (carData.rentalEndDate) {
+            const rentalEndDate = new Date(carData.rentalEndDate);
+            const formattedDate = rentalEndDate.toLocaleDateString();
+            carData.rentalEndDate = formattedDate;
+          }
+
+          setCar(carData);
+        } catch (error) {
+          console.error(error);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with an error status code
+          if (error.response.status === 500) {
+            // Internal Server Error occurred
+            navigate('/serverError')
+          } else {
+            // Handle other non-500 errors here, if needed
+            toast.error(error.response.data.message);
+          }
+        } else {
+          // The request was made but no response was received
+          toast.error('Network Error. Please check your internet connection.');
+        }
+      })}
+  }, [carId])
+
+
+ 
   return (
 
 
     <div className="flex justify-center">
       {/* Left Side: Car Details */}
-      <div className="w-1/2 p-4 border rounded-lg ">
+      <div className="w-2/3 border rounded-lg ">
         {/* Car Image */}
-        <div className="flex flex-col-reverse md:flex-row justify-center">
+        <div className="flex flex-col-reverse  md:flex-row justify-center">
   {/* Right Side: Car Details */}
-  <div className="w-full md:w-1/2 p-4 border rounded-lg">
-    {/* Car Details */}
-    <img
-      src="car_image_url"
-      alt="Car"
-      className="w-1/3 h-64 md:h-40 object-cover rounded-lg"
-    />
-  </div>
+  <div className="w-2/6 m-2 border rounded-lg flex justify-center items-center">
+        {car.images ? (
+          <img
+            src={car?.images[0]}
+            alt="Car"
+            className="w-full h-full md:h-full object-cover rounded-lg"
+          />
+        ) : null}
+      </div>
 
   {/* Left Side: Car Image */}
-  <div className="w-full md:w-1/2 p-4">
+  <div className="w-full md:w-4/6 p-4">
   <div className="mt-4 ">
-      <h2 className="text-xl font-semibold mt-2 mb-6">Car Name/Model</h2>
-      <p className="mt-4">Pickup Date: YYYY-MM-DD</p>
-      <p className="mt-4">Drop-off Date: YYYY-MM-DD</p>
-      <p className="mt-4">Pickup Location: Your Pickup Location</p>
-    <p className="mt-4">Drop-off Location: Your Drop-off Location</p>
+      <h2 className="text-xl font-semibold mt-2 mb-6">{car?.carModel}</h2>
+      <p className="mt-4">Pickup Date: {pickupDate}</p>
+      <p className="mt-4">Drop-off Date:{dropDate}</p>
+      <p className="mt-4">Pickup Location: {pickupLocation}</p>
+    <p className="mt-4">Drop-off Location:{dropLocation} </p>
       {/* Add other car details here */}
     </div>
     {/* Car Image */}
@@ -48,7 +98,7 @@ const PaymentPage = () => {
         {/* Total Cost */}
         <div className="mb-4">
           <label className="block text-gray-600 font-semibold">Total Cost:</label>
-          <span className="text-green-700 font-bold text-2xl">₹ Total Amount</span>
+        <span className="text-green-700 font-bold text-2xl">₹ {price}</span>
         </div>
 
         {/* Payment Options */}
@@ -56,14 +106,14 @@ const PaymentPage = () => {
           <label className="block text-gray-600 font-semibold">Select Payment Method:</label>
           <div className="mt-2">
             <label className="inline-flex items-center">
-              <input type="radio" name="paymentMethod" value="creditCard" />
-              <span className="ml-2">Credit Card</span>
+              <input type="radio" name="paymentMethod" value="wallet" />
+              <span className="ml-2">Wallet</span>
             </label>
           </div>
           <div className="mt-2">
             <label className="inline-flex items-center">
-              <input type="radio" name="paymentMethod" value="paypal" />
-              <span className="ml-2">PayPal</span>
+              <input type="radio" name="paymentMethod" value="card" />
+              <span className="ml-2">Card Payment</span>
             </label>
           </div>
           {/* Add more payment options as needed */}
@@ -81,4 +131,4 @@ const PaymentPage = () => {
   );
 };
 
-export default PaymentPage;
+export default PaymentPage

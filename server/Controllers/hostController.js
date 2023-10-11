@@ -327,4 +327,22 @@ module.exports = {
       res.status(500).send("Server Error");
     }
   },
+  cancelBooking: async(req,res)=>{
+    try {
+      const {BookingId,reason} = req.body
+      const booking = await Order.findOne({_id:BookingId})
+      if(booking){
+        booking.status='Cancelled'
+        booking.cancelReason=reason
+        const BookingData = booking.save()
+        if(BookingData){
+
+        return res.send({ message: 'booking Canceled', bookingCancel: true })
+      }
+      }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  }
 };

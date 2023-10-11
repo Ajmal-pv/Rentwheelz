@@ -6,7 +6,7 @@ import Footer from '../../Componenets/User/Home/Footer'
 
 function UserCar() {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Navbar/>
      <Car/>
      <Footer/>

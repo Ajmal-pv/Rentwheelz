@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { getUser, profileUpdate } from "../../../services/user-Service";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, storage } from "../../firebase/config";
-import { toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../../store/alertSlice";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,20 @@ const Profile = () => {
   useEffect(() => {
     getUser(userId).then((res) => {
       setUser(res.data);
+    }).catch((error)=>{
+      if (error.response) {
+        // The request was made and the server responded with an error status code
+        if (error.response.status === 500) {
+          // Internal Server Error occurred
+          navigate('/serverError')
+        } else {
+          // Handle other non-500 errors here, if needed
+          toast.error(error.response.data.message);
+        }
+      } else {
+        // The request was made but no response was received
+        toast.error('Network Error. Please check your internet connection.');
+      }
     });
   }, [update]);
   const profileImageInputRef = useRef(null);
@@ -83,7 +97,6 @@ const Profile = () => {
        
         const imageFile = licenseImage
         const storageRef = ref(storage, "images/" + imageFile.name);
-  
         return uploadBytes(storageRef, imageFile)
           .then((snapshot) => getDownloadURL(storageRef))
           .then((url) => {
@@ -103,7 +116,9 @@ const Profile = () => {
             }
             
            
-          });
+          }
+          
+          );
       } else {
         return Promise.resolve(); // No license image to upload
       }
@@ -347,6 +362,7 @@ const Profile = () => {
           )}
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 };

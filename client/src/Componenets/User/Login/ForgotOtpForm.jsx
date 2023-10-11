@@ -34,8 +34,19 @@ const ForgotOTPForm = () => {
         }
       })
       .catch((error) => {
-        console.log(error.response.data.message);
-        toast.error(error.response.data.message);
+        if (error.response) {
+          // The request was made and the server responded with an error status code
+          if (error.response.status === 500) {
+            // Internal Server Error occurred
+            navigate('/serverError')
+          } else {
+            // Handle other non-500 errors here, if needed
+            toast.error(error.response.data.message);
+          }
+        } else {
+          // The request was made but no response was received
+          toast.error('Network Error. Please check your internet connection.');
+        }
       });
     // Handle form submission here
 
@@ -87,4 +98,4 @@ const ForgotOTPForm = () => {
   );
 };
 
-export default ForgotOTPForm;
+export default ForgotOTPForm

@@ -24,10 +24,10 @@ import UserOrder from "../Pages/User/UserOrder";
 import NotFound from "../Pages/error/NotFound";
 import ServerError from "../Pages/error/ServerError";
 import Error from "../Pages/error/Error";
-<PublicRoute />;
+import Checkout from "../Componenets/User/Car/Checkout";
+import UserChat from "../Pages/User/UserChat";
 
 function User() {
- 
   return (
     <div>
       {/* private route */}
@@ -37,40 +37,33 @@ function User() {
         <Route path="/home" element={<Home />} />
         <Route path="/cars" element={<UserCar />} />
         <Route path="/cars/cardetails" element={<UserCarDetails />} />
-     
+        <Route path="/cancel" element={<UserCarDetails />} />
+
         {/* private Route */}
 
-
-        <Route path="/" element={<PrivateRoute/>}>
+        <Route path="/" element={<PrivateRoute />}>
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/success" element={<UserSuccess/>} />
-          <Route path="/rentedcars" element={<UserOrder/>} />
+          <Route path="/success" element={<UserSuccess />} />
+          <Route path="/rentedcars" element={<UserOrder />} />
+          <Route path="/chat" element={<UserChat />} />
           
-          
-          {/* <Route path="/cars/carpayment" element={<UserPayment/>} ></Route>  */}
+
+          <Route path="/cars/carpayment" element={<UserPayment />}></Route>
         </Route>
 
         {/* public routes */}
 
-
         <Route path="/" element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<UserForgot />} />
-        <Route path="/forgot-otp" element={<UserForgotOtp />} />
-        <Route path="/password-change" element={<UserNewPassword />} />
+          <Route path="/forgot-password" element={<UserForgot />} />
+          <Route path="/forgot-otp" element={<UserForgotOtp />} />
+          <Route path="/password-change" element={<UserNewPassword />} />
         </Route>
 
-         <Route path="/serverError" element={<ServerError />} />
-         <Route path="/error" element={<Error />} />
-        <Route
-        path="*"
-        element={
-          <NotFound redirectTo="/home" />
-        }
-      />
-
-
+        <Route path="/serverError" element={<ServerError />} />
+        <Route path="/error" element={<Error />} />
+        <Route path="*" element={<NotFound redirectTo="/home" />} />
       </Routes>
       <Toaster />
     </div>

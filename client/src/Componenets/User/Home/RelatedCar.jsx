@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCar } from '../../../services/user-Service';
 import { car } from '../../../services/admin-Service';
+import { Toaster, toast } from 'react-hot-toast';
 
 const RelatedCar = () => {
     const navigate=useNavigate()
@@ -18,7 +19,8 @@ const [heading,setHeading]=useState('')
         const page=location.pathname
         if(page==='/cars/cardetails'){
             
-            getCar('carDetails',carId).then((res)=>{
+            getCar('carDetails',carId)
+            .then((res)=>{
                 const carData=res.data
                 if(carData){
                     setCars(carData)
@@ -30,6 +32,20 @@ const [heading,setHeading]=useState('')
                     setHeading('Related Cars...')
                     
                 }
+            }).catch((error)=>{
+              if (error.response) {
+                // The request was made and the server responded with an error status code
+                if (error.response.status === 500) {
+                  // Internal Server Error occurred
+                  navigate('/serverError')
+                } else {
+                  // Handle other non-500 errors here, if needed
+                  toast.error(error.response.data.message);
+                }
+              } else {
+                // The request was made but no response was received
+                toast.error('Network Error. Please check your internet connection.');
+              }
             })
         } 
         else if(page==='/' || '/home'){
@@ -45,8 +61,19 @@ const [heading,setHeading]=useState('')
                 }
 
             }).catch((error)=>{
-                  alert(error.message)  
-                  console.log(error);
+              if (error.response) {
+                // The request was made and the server responded with an error status code
+                if (error.response.status === 500) {
+                  // Internal Server Error occurred
+                  navigate('/serverError')
+                } else {
+                  // Handle other non-500 errors here, if needed
+                  toast.error(error.response.data.message);
+                }
+              } else {
+                // The request was made but no response was received
+                toast.error('Network Error. Please check your internet connection.');
+              }
             })
         } 
            
@@ -105,6 +132,7 @@ const [heading,setHeading]=useState('')
         ))}
         
       </div>
+      <Toaster/>
     </div>
   );
 };

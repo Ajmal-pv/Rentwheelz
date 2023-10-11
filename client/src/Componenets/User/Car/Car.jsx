@@ -1,15 +1,74 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,Fragment } from 'react'
+
 import { cars } from '../../../services/user-Service'
 import { Link, useNavigate } from 'react-router-dom'
 import CarLocation from './CarLocation'
+import { Toaster, toast } from 'react-hot-toast'
+
+
+
+
 
 function Car() {
+
+  const [isOpenBrand, setIsOpenBrand] = useState(false)
+  const [isOpenColor, setIsOpenColor] = useState(false);
+  const [isOpenModel, setIsOpenModel] = useState(false);
+
+  const toggleDropdownBrand = () => {
+    setIsOpenBrand(!isOpenBrand)
+  };
+  const toggleDropdownColor = () => {
+    setIsOpenColor(!isOpenColor)
+  };
+  const toggleDropdownModel = () => {
+    setIsOpenModel(!isOpenModel)
+  };
+ // State for selected options in each filter category
+ const [selectedBrandOptions, setSelectedBrandOptions] = useState([]);
+ const [selectedColorOptions, setSelectedColorOptions] = useState([]);
+ const [selectedModelOptions, setSelectedModelOptions] = useState([]);
+  // const [selectedOptions, setSelectedOptions] = useState([]);
+
+  // const handleOptionSelect = (option) => {
+  //   if (selectedOptions.includes(option.value)) {
+  //     // If the option is already selected, remove it
+  //     setSelectedOptions(selectedOptions.filter((value) => value !== option.value));
+  //   } else {
+  //     // If the option is not selected, add it
+  //     setSelectedOptions([...selectedOptions, option.value]);
+  //   }
+  // };
+   // Function to handle checkbox selection
+   const handleOptionSelect = (option, category) => {
+    switch (category) {
+      case 'Brand':
+        setSelectedBrandOptions([option]);
+        break;
+      case 'Color':
+        setSelectedColorOptions([option]);
+        break;
+      case 'Model':
+        setSelectedModelOptions([option]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  
+
+  
+  
   const navigate = useNavigate()
     
     const [selectedFilters, setSelectedFilters] = useState([]);
     const [allcar,setAllcar]=useState([])
     const[cars1,setCars1]=useState(allcar)
     const [location, setLocation] = useState('');
+    const [brands, setBrands] = useState('');
+    const [models, setModels] = useState('');
+    const [colors, setColors] = useState('');
     const [startDate,setStartDate]=useState('')
     const [endDate,setEndDate]=useState('')
 
@@ -22,8 +81,26 @@ function Car() {
     useEffect(() => {
       cars().then((res)=>{
         if(res.data.status){
+         
    setAllcar(res.data.cars)
    setCars1(res.data.cars)
+   setBrands(res.data.result.distinctBrands)
+   setModels(res.data.result.distinctModels)
+   setColors(res.data.result.distinctColors)
+        }
+      }).catch((error)=>{
+        if (error.response) {
+          // The request was made and the server responded with an error status code
+          if (error.response.status === 500) {
+            // Internal Server Error occurred
+            navigate('/serverError')
+          } else {
+            // Handle other non-500 errors here, if needed
+            toast.error(error.response.data.message);
+          }
+        } else {
+          // The request was made but no response was received
+          toast.error('Network Error. Please check your internet connection.');
         }
       })
     
@@ -42,9 +119,51 @@ function Car() {
       setEndDate(e.target.value);
     };
   
-    
+    useEffect(()=>{
+     if(selectedBrandOptions){
+      
+      const filter =cars1.filter((car)=>{
+        return(
+            car.Brand == selectedBrandOptions
+        )
+      })
+      setCars1(filter)
+     }
+     
   
-    // Function to filter cars based on user input
+     
+    },[selectedBrandOptions])
+    useEffect(()=>{
+      if(selectedModelOptions){
+      
+        const filter =cars1.filter((car)=>{
+          return(
+              car.model === selectedModelOptions
+          )
+        })
+        setCars1(filter)
+       }
+    },[selectedModelOptions])
+    useEffect(() => {
+      if (selectedColorOptions.length > 0) {
+        
+      
+        const filteredCars = cars1.filter((car) => {
+          // Check if the car's color is in the selectedColorOptions array
+          return selectedColorOptions.includes(car.color);
+        });
+    
+        console.log(filteredCars);
+        setCars1(filteredCars);
+      } else {
+        // If no color options are selected, reset to the original list
+        setCars1(allcar); // Assuming you have the original car data stored in `allCars`
+      }
+    }, [selectedColorOptions]);
+
+
+  
+    // // Function to filter cars based on user input
     const filterCars1 = () => {
       if(location && startDate && endDate){
       const filtered = cars1.filter((car) => {
@@ -56,7 +175,7 @@ function Car() {
         carStartDate <= new Date(startDate) &&
         carEndDate >= new Date(endDate) &&
         car.city.toLowerCase() === location.toLowerCase()
-      );
+      )
       
       });
     
@@ -64,6 +183,8 @@ function Car() {
     };
 
     
+   
+  
   
    
     
@@ -71,9 +192,208 @@ function Car() {
   return (
 
     <div className='flex flex_col h-[100vh]' >
-      <div  className=' w-2/6 h-full'>
+       <div className='w-2/6 h-full border-b-2 border-gray-700   p-5'>
+         <div>
+    <h1 className='font-serif mb-4 border-b-2 text-xl border-gray-300  m-2'>Filters</h1>
+    {/* <div className="relative m-2 ">
+     
+      <button
+        className="flex items-center justify-between w-full p-2 cursor-pointer"
+        onClick={toggleDropdownBrand}
+      >
+        <span>BRAND</span>
+        <span className="ml-2">&#9660;</span>
+      </button>
 
+    
+      {isOpenBrand && (
+        <div >
+          {brands.map((option) => (
+            <label
+              key={option.value}
+              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              
+              <input
+                type="checkbox"
+                name="filterOptionBrand"
+                value={option.value}
+                checked={selectedOptions.includes(option.value)}
+                onChange={() => handleOptionSelect(option)}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      )}
+    </div> */}
+    {/* <div className="relative m-2 ">
+  
+      <button
+        className="flex items-center justify-between w-full p-2 cursor-pointer"
+        onClick={toggleDropdownColor}
+      >
+        <span>COLOR</span>
+        <span className="ml-2">&#9660;</span>
+      </button>
+
+    
+      {isOpenColor && (
+        <div >
+          {colors.map((option) => (
+            <label
+              key={option.value}
+              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              
+              <input
+                type="checkbox"
+                name="filterOptionColor"
+                value={option.value}
+                checked={selectedOptions.includes(option.value)}
+                onChange={() => handleOptionSelect(option)}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      )}
+    </div> */}
+    {/* <div className="relative m-2 ">
+     
+      <button
+        className="flex items-center justify-between w-full p-2 cursor-pointer"
+        onClick={toggleDropdownFuel}
+      >
+        <span>Model</span>
+        <span className="ml-2">&#9660;</span>
+      </button>
+
+  
+      {isOpenFuel && (
+        <div >
+          {models.map((option) => (
+            <label
+              key={option.value}
+              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              
+              <input
+                type="checkbox"
+                name="filterOptionModel"
+                value={option}
+                checked={selectedOptions.includes(option.value)}
+                onChange={() => handleOptionSelect(option)}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      )}
+    </div> */}
+
+<div className="relative m-2">
+        {/* Filter button to toggle the dropdown */}
+        <button
+          className="flex items-center justify-between w-full p-2 cursor-pointer"
+          onClick={toggleDropdownBrand}
+        >
+          <span>BRAND</span>
+          <span className="ml-2">&#9660;</span>
+        </button>
+
+        {/* Dropdown options */}
+        {isOpenBrand && (
+          <div>
+            {brands.map((option) => (
+              <label
+                key={option}
+                className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  name="filterOptionBrand"
+                  value={option}
+                  checked={selectedBrandOptions.includes(option)}
+                  onChange={() => handleOptionSelect(option, 'Brand')}
+                  className='m-2'
+                />
+                  {  option}
+              </label>
+            ))}
+          </div>
+        )}
       </div>
+
+      <div className="relative m-2">
+        {/* Filter button to toggle the dropdown */}
+        <button
+          className="flex items-center justify-between w-full p-2 cursor-pointer"
+          onClick={toggleDropdownColor}
+        >
+          <span>COLOR</span>
+          <span className="ml-2">&#9660;</span>
+        </button>
+
+        {/* Dropdown options */}
+        {isOpenColor && (
+          <div>
+            {colors.map((option) => (
+              <label
+                key={option}
+                className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  name="filterOptionColor"
+                  value={option}
+                  checked={selectedColorOptions.includes(option)}
+                  onChange={() => handleOptionSelect(option, 'Color')}
+                  className='m-2'
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="relative m-2">
+        {/* Filter button to toggle the dropdown */}
+        <button
+          className="flex items-center justify-between w-full p-2 cursor-pointer"
+          onClick={toggleDropdownModel}
+        >
+          <span>Model</span>
+          <span className="ml-2">&#9660;</span>
+        </button>
+
+        {/* Dropdown options */}
+        {isOpenModel && (
+          <div>
+            {models.map((option) => (
+              <label
+                key={option}
+                className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  name="filterOptionModel"
+                  value={option}
+                  checked={selectedModelOptions.includes(option)}
+                  onChange={() => handleOptionSelect(option, 'Model')}
+                  className='m-2'
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+         </div>
+        </div>
+       
+    
   
   <div className=' w-full h-full  '>
   <div className="container mx-auto p-4 box-border ">
@@ -130,7 +450,7 @@ function Car() {
       </div>
     </div>
     <div className="flex flex-wrap w-full ">
-      {cars1.map((car) => (
+      {cars1?.map((car) => (
         <Link to={`cardetails?id=${car._id}`}>
       <div key={car._id}  className="relative m-6 h-[60vh] flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
         <div className="relative w-full   flex h-60 overflow-hidden rounded-md" >
@@ -178,7 +498,7 @@ function Car() {
 
 
   </div>
-
+<Toaster/>
 
     </div>
     
@@ -187,3 +507,6 @@ function Car() {
   )}
 
 export default Car
+
+
+

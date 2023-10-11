@@ -12,17 +12,25 @@ const orderSchema = new mongoose.Schema({
     },
     car:{ type: mongoose.Schema.Types.ObjectId, ref: "Car" },
     paymentMethod:{type:String},
-    status:{type:String,default:'upcoming'}
+    status:{type:String,default:'upcoming'},
+    cancelReason:{
+      type:String
+    },
+    pickupLocation:{type:String},
+    dropOffLocation:{type:String},
+    deposit:{typr:String}
 });
 orderSchema.pre('save', function (next) {
     const currentDate = new Date();
+    if(this.status !== 'Cancelled'){
+
     if (currentDate >= this.startDate && currentDate <= this.endDate) {
       this.status = 'ongoing';
     } else if (currentDate > this.endDate) {
       this.status = 'completed';
-    } else {
+    } else  {
       this.status = 'upcoming';
-    }
+    }}
     next();
   });
 module.exports = mongoose.model("Order", orderSchema);

@@ -52,9 +52,9 @@ export const orderCreation=(orderData)=>{
   return api.post('/ordercreation', {orderData} , { withCredentials: true });
 }
 
-export const callStripe = (price,product) => {
+export const callStripe = (price,product,carId) => {
  
-  return api.post("/create-checkout-session", { price,product,startDate,endDate,dropOff }, { withCredentials: true });
+  return api.post("/create-checkout-session", { price,product,carId }, { withCredentials: true });
 };
 export const datesSelected=(carId)=>{
   return api.get(`/datesSelected?id=${carId}`)
@@ -65,6 +65,17 @@ export const profileUpdate  = (licenseUrl,profileUrl,editedMobile,editedName,use
 };
 export const getUserBooking=(userId)=>{
   return api.get(`/userBooking?id=${userId}`)
+}
+
+export const userChats=(userId)=>{
+  return api.get(`/chat/${userId}`)
+}
+export const getMessages=(id)=>{
+  return api.get(`/message/${id}`)
+}
+
+export const addMessage=(data)=>{
+  return api.post(`/message/`,data,{ withCredentials: true })
 }
 
 

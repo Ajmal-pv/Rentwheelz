@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  blockReason:{
+  Reason_For_Block:{
     type:String
   },
   is_host:{

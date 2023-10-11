@@ -23,6 +23,7 @@ user_route.get('/getuser',userController.getUser)
 user_route.get('/datesSelected',userController.getDates)
 user_route.post('/create-checkout-session',userController.stripePayment)
 
+
 user_route.post('/ordercreation',userController.orderCreation)
 user_route.post('/edit-profile',userController.editProfile)
 user_route.get('/userBooking',userController.userBookings)

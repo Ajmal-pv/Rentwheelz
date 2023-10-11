@@ -32,4 +32,7 @@ export const hostCar =(hostId)=>{
   export const getHostCars=(hostId)=>{
     return api.get(`/Bookedcars?id=${hostId}`)
   }
-
+  export const cancelBooking=(BookingId,reason)=>{
+    return api.post('/cancelbooking', {BookingId,reason }, { withCredentials: true })
+  }
+  

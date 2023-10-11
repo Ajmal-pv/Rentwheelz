@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { getUserBooking } from "../../../services/user-Service";
+import { Toaster, toast } from "react-hot-toast";
 
 function BookingPage() {
   const [filter, setFilter] = useState("all");
@@ -14,15 +15,18 @@ function BookingPage() {
           setBookings(res.data);
         }
       }).catch((error)=>{
-        if (error.response && error.response.status === 500) {
-         
-          // Handle the 500 internal server error by redirecting to the error page
-          navigate('/serverError');
+        if (error.response) {
+          // The request was made and the server responded with an error status code
+          if (error.response.status === 500) {
+            // Internal Server Error occurred
+            navigate('/serverError')
+          } else {
+            // Handle other non-500 errors here, if needed
+            toast.error(error.response.data.message);
+          }
         } else {
-          // Handle other errors here
-          console.error("Error uploading images:", error);
-        
-          throw error; // Propagate the error
+          // The request was made but no response was received
+          toast.error('Network Error. Please check your internet connection.');
         }
       })
     }
@@ -160,6 +164,7 @@ function BookingPage() {
           </div>
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 }

@@ -56,7 +56,7 @@ const CarDetails = () => {
       .catch((error) => {
         console.error(error);
       });
-  }, [car]);
+  }, [car])
   useEffect(() => {
     if (startDate && endDate) {
       const startDateObj = new Date(startDate);
@@ -77,8 +77,8 @@ const CarDetails = () => {
       }
       const pricePerDay = car.rentalPrice;
 
-      const numberOfDays = (endDateObj - startDateObj) / (1000 * 60 * 60 * 24);
-      const total = pricePerDay * (numberOfDays + 1);
+      const numberOfDays = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24));
+      const total = pricePerDay * (numberOfDays);
 
       setPrice(total);
     }
@@ -136,13 +136,27 @@ const CarDetails = () => {
     return false; // No overlap with any disabled range
   };
 
+  const handleNext =()=>{
+    if (startDate === "" || endDate === "" || price === null || dropOff==='') {
+      return toast.error("Make sure you selected StartDate,EndDate and Drop off location");
+    }
+   
+    if(userToken){
+     
+      navigate(`/cars/carpayment?pd=${startDate}&dd=${endDate}&id=${carId}&userid=${userId}&hostId=${car.hostId}&pickup=${car.city}&drop=${dropOff}`)
+
+    }else{
+      navigate('/login')
+    }
+  }
+
   const handleSubmit = () => {
     if (startDate === "" || endDate === "" || price === null || dropOff==='') {
       return toast.error("Make sure you selected StartDate,EndDate and Drop off location");
     }
 
     if (userToken) {
-      callStripe(price, car.carModel).then((res) => {
+      callStripe(price, car.carModel,car._id).then((res) => {
         if (res) {
           const orderData = {
             startDate: startDate, // Replace with your start date
@@ -166,7 +180,7 @@ const CarDetails = () => {
   };
 
   return (
-    <div className="bg-gray-100">
+    <div >
       <main className="container mx-auto p-6">
         {car && (
           <div className="flex flex-col md:flex-row">
@@ -258,7 +272,9 @@ const CarDetails = () => {
                   className="text-black font-semibold ml-2"
                   selected={startDate}
                   onChange={(date) => {
-                    setStartDate(date);
+                    const dateTime=date
+                    dateTime.setHours(10,0,0,0)
+                    setStartDate(dateTime)
                   }}
                   minDate={new Date()}
                   filterDate={isDateDisabled} // Use a custom function to disable specific dates
@@ -270,13 +286,18 @@ const CarDetails = () => {
                 <DatePicker
                   className="text-black font-semibold ml-2"
                   selected={endDate}
-                  onChange={(date) => setEndDate(date)}
+                  onChange={(date) => {
+                    const dateTime=date
+                    dateTime.setHours(21,0,0,0)
+                    
+                    setEndDate(dateTime)}}
                   minDate={new Date()}
                   filterDate={isDateDisabled} // Use a custom function to disable specific dates
                   showDisabledMonthNavigation
                   placeholderText="dd-mm-yyyy"
                 />
               </div>
+
               {price && (
                 <div className="flex items-center mb-4">
                   <span className="text-gray-600 text-sm mr-2">
@@ -294,7 +315,7 @@ const CarDetails = () => {
       <div className="flex justify-center">
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-          onClick={handleSubmit}
+          onClick={handleNext}
         >
           Rent Now
         </button>
