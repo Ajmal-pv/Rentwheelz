@@ -77,5 +77,11 @@ export const getMessages=(id)=>{
 export const addMessage=(data)=>{
   return api.post(`/message/`,data,{ withCredentials: true })
 }
+export const cancelBooking=(BookingId,reason,userId)=>{
+  return api.post('/cancelbooking', {BookingId,reason,userId }, { withCredentials: true })
+}
 
+export const  getWallet=(userId)=>{
+  return api.get(`/getwallet?id=${userId}`)
+}
 

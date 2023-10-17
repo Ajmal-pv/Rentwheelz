@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Singlcar, callStripe } from '../../../services/user-Service';
+import { Singlcar, callStripe, getWallet } from '../../../services/user-Service';
 import { Toaster, toast } from 'react-hot-toast';
+import moment from 'moment';
 
 function Checkout() {
   const navigate=useNavigate()
@@ -13,6 +14,7 @@ function Checkout() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [viewStartDate,setViewStartDate]=useState('')
   const [viewEndDate,setViewEndDate]=useState('')
+  const [wallet,setWallet]=useState(null)
  const userToken = localStorage.getItem('userToken')
   const searchParams = new URLSearchParams(location.search);
   const pickupDate = searchParams.get('pd')
@@ -79,6 +81,18 @@ const formattedEndDate = `${dropDateNew.toLocaleDateString()} ${dropDateNew.toLo
     }
   }, [carId]);
   useEffect(()=>{
+      try {
+       getWallet(userId).then((res)=>{
+        
+         const wallet1 = res.data
+         setWallet(wallet1)
+         
+       })
+      } catch (error) {
+        
+      }
+  },[])
+  useEffect(()=>{
 if(pickupDate && dropDate && car){
   const startDateObj = new Date(pickupDate);
   const endDateObj = new Date(dropDate);
@@ -90,8 +104,13 @@ if(pickupDate && dropDate && car){
     setPrice(total)
 
     const priceAsNumber = parseFloat(total); // Convert the string to a floating-point number
-      setTotalPrice(priceAsNumber + 3000)
+       setTotalPrice(priceAsNumber + 3000)
+      
+        
+
+   
      }
+
   },[pickupDate,dropDate,car])
 
   const handleSubmit = () => {
@@ -113,11 +132,13 @@ if(pickupDate && dropDate && car){
             hostId: hostId,
             dropOff:dropLocation,
             pickup:pickupLocation,
-            price:price,
-            deposit:3000
+            TotalAmount:totalPrice,
+            deposit:3000,
+            method:'Stripe'
           };
+          console.log(typeof(totalPrice),'helo');
           const orderDataJSON = JSON.stringify(orderData);
-
+  
           // Store the JSON string in localStorage
           localStorage.setItem("orderData", orderDataJSON);
           window.location.href = res.data.url;
@@ -125,21 +146,25 @@ if(pickupDate && dropDate && car){
       
       })
     }else if(selectedPaymentMethod === 'wallet'){
+     
+      if(wallet < totalPrice){
+        return toast.error('Your wallet balance is less than total amount.Please Select other payment method')
+      }
 
       const orderData = {
         startDate: pickupDate, // Replace with your start date
-        endDate: dropDate, // Replace with your end date
-        carId: carId,
-        userId: userId,
-        hostId: hostId,
-        dropOff:dropLocation,
-        pickup:pickupLocation,
-        price:price,
-        deposit:3000
+            endDate: dropDate, // Replace with your end date
+            carId: carId,
+            userId: userId,
+            hostId: hostId,
+            dropOff:dropLocation,
+            pickup:pickupLocation,
+            TotalAmount:totalPrice,
+            deposit:3000,
+            method:'Wallet'
       };
       const orderDataJSON = JSON.stringify(orderData);
 
-      // Store the JSON string in localStorage
       localStorage.setItem("orderData", orderDataJSON); 
       navigate('/success') 
     }
@@ -175,8 +200,12 @@ if(pickupDate && dropDate && car){
           {/* Display pickup and drop-off information */}
           <p className="mt-8 text-lg font-medium">Booking Details</p>
           <div className=" font-serif">
-            <p className='mt-4'>Pickup Date: {pickupDate}</p>
-            <p className='mt-4'>Drop-off Date: {dropDate}</p>
+            <p className='mt-4'>Pickup Date: {moment
+                          .utc(pickupDate)
+                          .format("MMMM D, YYYY, h:mm A")}</p>
+            <p className='mt-4'>Drop-off Date: {moment
+                          .utc(dropDate)
+                          .format("MMMM D, YYYY, h:mm A")}</p>
             <p className='mt-4'>Pickup Location: {pickupLocation}</p>
             <p className='mt-4'>Drop-off Location: {dropLocation}</p>
           </div>
@@ -232,7 +261,9 @@ if(pickupDate && dropDate && car){
         <span className="mt-2 font-semibold">Wallet</span>
         <p className="text-slate-500 text-sm leading-6">Pay using your Wallet account.</p>
       </div>
+      
     </label>
+    <span className='text-red-600' >Your wallet balance is {wallet} </span>
   </div>
 </form>
 

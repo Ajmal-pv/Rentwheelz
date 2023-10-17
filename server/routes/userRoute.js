@@ -21,12 +21,14 @@ user_route.get('/specialCars',userController.specialCar)
 user_route.get('/getuser',userController.getUser)
 
 user_route.get('/datesSelected',userController.getDates)
-user_route.post('/create-checkout-session',userController.stripePayment)
+user_route.post('/create-checkout-session',userAuth,userController.stripePayment)
 
 
-user_route.post('/ordercreation',userController.orderCreation)
-user_route.post('/edit-profile',userController.editProfile)
-user_route.get('/userBooking',userController.userBookings)
+user_route.post('/ordercreation',userAuth,userController.orderCreation)
+user_route.post('/edit-profile',userAuth,userController.editProfile)
+user_route.get('/userBooking',userAuth,userController.userBookings)
+user_route.post('/cancelbooking',userAuth,userController.cancelBooking)
+user_route.get('/getwallet',userAuth,userController.getwallet)
 
 
 module.exports = user_route;

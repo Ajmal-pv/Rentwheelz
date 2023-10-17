@@ -2,65 +2,80 @@ import React, { useEffect, useRef, useState } from 'react';
 import { userChats } from '../../../services/user-Service';
 import Conversation from './Conversation';
 import ChatBox from './ChatBox'
-import {io} from 'socket.io-client'
+import io from 'socket.io-client';
 
+const socket = io('http://localhost:5000')
 
 function ChatComponent() {
+  
     const user=localStorage.getItem('userToken')
     const userId=localStorage.getItem('userId')
     const [chats,setChats]=useState([]) 
     const [currentChat,setCurrentChat]=useState(null)
     const[onlineUsers,setOnlineUsers]=useState([])
-    const[sendMessage,setSendMessage]=useState(null)
+    const[sendMessage,setSendMessage]=useState('')
     const[recieveMessage,setRecieveMessage]=useState(null)
+    const[messages,setMessages]=useState([])
 
-    const socket = useRef()
+  
    
     useEffect(()=>{
         const getChats= async()=>{
             try {
                 const {data}=await userChats(userId)
-                console.log(data);
+               
                 setChats(data)
-                console.log(data);
-            } catch (error) {
                 
+            } catch (error) {
+                console.log(error);
             }
         }
         getChats()
     },[user])
-    useEffect(()=>{
-  socket.current=io('http://localhost:5000')
-  socket.current.emit('new-user-add',userId)
-  socket.current.on('get-users',(users)=>{
-    setOnlineUsers(users)
-    console.log(onlineUsers);
-  })
- },[user])
+   
+    // Define an effect to set up the event listener when the component mounts
+  useEffect(() => {
+    // Emit a "new-user-add" event to notify the server about the new user
+    socket.emit("new-user-add", userId);
 
+    // Listen for incoming messages
+    socket.on("receive-message", (data) => {
+      console.log('Received a message:', data);
+      setRecieveMessage(data);
+    });
 
+    // Clean up the event listener when the component unmounts
+    return () => {
+      socket.off("receive-message");
+    };
+  }, [userId]); // Only set up the listener when `userId` changes
+
+    useEffect(() => {
+      socket.on("connect", () => {
+        console.log("Connected to Socket.IO server");
+      });
+    }, []);
 
    
 
     useEffect(()=>{
-      if(sendMessage !== null){
-       socket.current.emit('send-message',sendMessage)
-      }
+     
+       socket.emit('message',sendMessage)
+       setSendMessage('')
+      console.log('at send message socket ');
      },[sendMessage])
+    
 
-       // Get the message from socket server
-  useEffect(() => {
-    socket.current.on("receive-message", (data) => {
-      console.log(data,'kkkk')
-      setRecieveMessage(data)
-    }
-    );
-  }, []);
-  const checkOnlineStatus = (chat) => {
-    const chatMember = chat.members.find((member) => member !== user._id);
-    const online = onlineUsers.find((user) => user.userId === chatMember);
-    return online ? true : false;
-  };
+       
+
+
+
+
+  // const checkOnlineStatus = (chat) => {
+  //   const chatMember = chat.members.find((member) => member !== user._id);
+  //   const online = onlineUsers.find((user) => user.userId === chatMember)
+  //   return online ? true : false;
+  // };
 
   return (
     

@@ -24,37 +24,53 @@ function Car() {
   const toggleDropdownModel = () => {
     setIsOpenModel(!isOpenModel)
   };
+
+  
  // State for selected options in each filter category
  const [selectedBrandOptions, setSelectedBrandOptions] = useState([]);
  const [selectedColorOptions, setSelectedColorOptions] = useState([]);
  const [selectedModelOptions, setSelectedModelOptions] = useState([]);
-  // const [selectedOptions, setSelectedOptions] = useState([]);
-
-  // const handleOptionSelect = (option) => {
-  //   if (selectedOptions.includes(option.value)) {
-  //     // If the option is already selected, remove it
-  //     setSelectedOptions(selectedOptions.filter((value) => value !== option.value));
-  //   } else {
-  //     // If the option is not selected, add it
-  //     setSelectedOptions([...selectedOptions, option.value]);
-  //   }
-  // };
-   // Function to handle checkbox selection
-   const handleOptionSelect = (option, category) => {
+ 
+  const handleOptionSelect = (option, category) => {
     switch (category) {
       case 'Brand':
-        setSelectedBrandOptions([option]);
+        setSelectedBrandOptions((prevOptions) => {
+          if (prevOptions.includes(option)) {
+            // If the option is already selected, remove it
+            return prevOptions.filter((item) => item !== option);
+          } else {
+            // If the option is not selected, add it
+            return [...prevOptions, option];
+          }
+        });
         break;
       case 'Color':
-        setSelectedColorOptions([option]);
+        setSelectedColorOptions((prevOptions) => {
+          if (prevOptions.includes(option)) {
+            // If the option is already selected, remove it
+            return prevOptions.filter((item) => item !== option);
+          } else {
+            // If the option is not selected, add it
+            return [...prevOptions, option];
+          }
+        });
         break;
       case 'Model':
-        setSelectedModelOptions([option]);
+        setSelectedModelOptions((prevOptions) => {
+          if (prevOptions.includes(option)) {
+            // If the option is already selected, remove it
+            return prevOptions.filter((item) => item !== option);
+          } else {
+            // If the option is not selected, add it
+            return [...prevOptions, option];
+          }
+        });
         break;
       default:
         break;
     }
   };
+  
 
   
 
@@ -62,7 +78,7 @@ function Car() {
   
   const navigate = useNavigate()
     
-    const [selectedFilters, setSelectedFilters] = useState([]);
+   
     const [allcar,setAllcar]=useState([])
     const[cars1,setCars1]=useState(allcar)
     const [location, setLocation] = useState('');
@@ -107,8 +123,40 @@ function Car() {
       
     }, [])
 
-   
-    const [filteredCars, setFilteredCars] = useState([]);
+    useEffect(() => {
+      // Apply filters when filter options change
+      filterCars();
+    }, [selectedBrandOptions, selectedColorOptions, selectedModelOptions]);
+    const filterCars = () => {
+    
+      const filtered = allcar.filter((car) => {
+        return (
+          (selectedBrandOptions.length === 0 || selectedBrandOptions.includes(car.Brand)) &&
+          (selectedColorOptions.length === 0 || selectedColorOptions.includes(car.color)) &&
+          (selectedModelOptions.length === 0 || selectedModelOptions.includes(car.carModel))
+        );
+      });
+      if(location && startDate && endDate){
+        const filtered1 = filtered.filter((car) => {
+          const carStartDate = new Date(car.startDate);
+          const carEndDate = new Date(car.endDate);
+      
+          return (
+            carStartDate <= new Date(startDate) &&
+            carEndDate >= new Date(endDate) &&
+            car.city.toLowerCase() === location.toLowerCase()
+          );
+        });
+       setCars1(filtered1)
+
+      }else{
+        setCars1(filtered);
+      }
+  
+      
+    };
+
+    
   
     // Handle input changes for start date, end date, and location
     const handleStartDateChange = (e) => {
@@ -119,70 +167,18 @@ function Car() {
       setEndDate(e.target.value);
     };
   
-    useEffect(()=>{
-     if(selectedBrandOptions){
-      
-      const filter =cars1.filter((car)=>{
-        return(
-            car.Brand == selectedBrandOptions
-        )
-      })
-      setCars1(filter)
-     }
-     
-  
-     
-    },[selectedBrandOptions])
-    useEffect(()=>{
-      if(selectedModelOptions){
-      
-        const filter =cars1.filter((car)=>{
-          return(
-              car.model === selectedModelOptions
-          )
-        })
-        setCars1(filter)
-       }
-    },[selectedModelOptions])
-    useEffect(() => {
-      if (selectedColorOptions.length > 0) {
-        
-      
-        const filteredCars = cars1.filter((car) => {
-          // Check if the car's color is in the selectedColorOptions array
-          return selectedColorOptions.includes(car.color);
-        });
     
-        console.log(filteredCars);
-        setCars1(filteredCars);
-      } else {
-        // If no color options are selected, reset to the original list
-        setCars1(allcar); // Assuming you have the original car data stored in `allCars`
-      }
-    }, [selectedColorOptions]);
-
-
-  
-    // // Function to filter cars based on user input
     const filterCars1 = () => {
-      if(location && startDate && endDate){
-      const filtered = cars1.filter((car) => {
-        // Check if car meets the criteria
-        const carStartDate = new Date(car.rentalStartDate);
-      const carEndDate = new Date(car.rentalEndDate);
-
-      return (
-        carStartDate <= new Date(startDate) &&
-        carEndDate >= new Date(endDate) &&
-        car.city.toLowerCase() === location.toLowerCase()
-      )
-      
-      });
+      if (!location || !startDate || !endDate) {
+        toast.error('Please select location, start date, and end date');
+        return;
+      }
     
-      setCars1(filtered);}
+      filterCars()
     };
-
     
+
+   
    
   
   
@@ -194,103 +190,10 @@ function Car() {
     <div className='flex flex_col h-[100vh]' >
        <div className='w-2/6 h-full border-b-2 border-gray-700   p-5'>
          <div>
-    <h1 className='font-serif mb-4 border-b-2 text-xl border-gray-300  m-2'>Filters</h1>
-    {/* <div className="relative m-2 ">
-     
-      <button
-        className="flex items-center justify-between w-full p-2 cursor-pointer"
-        onClick={toggleDropdownBrand}
-      >
-        <span>BRAND</span>
-        <span className="ml-2">&#9660;</span>
-      </button>
-
+         
+    <h1 className='font-serif  text-xl border-gray-300 border-b-2 mb-4 m-2 '>Filters</h1>
     
-      {isOpenBrand && (
-        <div >
-          {brands.map((option) => (
-            <label
-              key={option.value}
-              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              
-              <input
-                type="checkbox"
-                name="filterOptionBrand"
-                value={option.value}
-                checked={selectedOptions.includes(option.value)}
-                onChange={() => handleOptionSelect(option)}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      )}
-    </div> */}
-    {/* <div className="relative m-2 ">
-  
-      <button
-        className="flex items-center justify-between w-full p-2 cursor-pointer"
-        onClick={toggleDropdownColor}
-      >
-        <span>COLOR</span>
-        <span className="ml-2">&#9660;</span>
-      </button>
-
-    
-      {isOpenColor && (
-        <div >
-          {colors.map((option) => (
-            <label
-              key={option.value}
-              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              
-              <input
-                type="checkbox"
-                name="filterOptionColor"
-                value={option.value}
-                checked={selectedOptions.includes(option.value)}
-                onChange={() => handleOptionSelect(option)}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      )}
-    </div> */}
-    {/* <div className="relative m-2 ">
-     
-      <button
-        className="flex items-center justify-between w-full p-2 cursor-pointer"
-        onClick={toggleDropdownFuel}
-      >
-        <span>Model</span>
-        <span className="ml-2">&#9660;</span>
-      </button>
-
-  
-      {isOpenFuel && (
-        <div >
-          {models.map((option) => (
-            <label
-              key={option.value}
-              className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              
-              <input
-                type="checkbox"
-                name="filterOptionModel"
-                value={option}
-                checked={selectedOptions.includes(option.value)}
-                onChange={() => handleOptionSelect(option)}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      )}
-    </div> */}
+   
 
 <div className="relative m-2">
         {/* Filter button to toggle the dropdown */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import classNames from "classnames";
+import moment from 'moment';
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Singlcar,
@@ -100,8 +100,8 @@ const CarDetails = () => {
   const isDateDisabled = (date) => {
     const normal = () => {
       return (
-        date >= new Date(car.rentalStartDate) &&
-        date <= new Date(car.rentalEndDate)
+        date >= new Date(car.startDate) &&
+        date <= new Date(car.endDate)
       );
     };
 
@@ -206,17 +206,14 @@ const CarDetails = () => {
               <h1 className="text-3xl font-semibold">
                 {car.carBrand} {car.carModel}
               </h1>
-              <p className="text-black mb-2 mt-5">{car.discription}</p>
+              <p className="text-black mb-2 mt-2">{car.discription}</p>
 
               <div className="flex items-center mb-4 ">
                 <span className="text-green-500 font-semibold text-xl mr-2">
                   ₹ {car.rentalPrice}/DAY
                 </span>
               </div>
-              <div className="flex items-center mb-2">
-                <span className="text-gray-600 text-sm mr-2 capitalize">Pick up Location:</span>
-                <span className="text-black font-semibold capitalize">{car.city}</span>
-              </div>
+              
               <div className="flex items-center mb-2">
                 <span className="text-gray-600 text-sm mr-2">Year:</span>
                 <span className="text-black font-semibold">
@@ -257,44 +254,51 @@ const CarDetails = () => {
                   {car.rentalEndDate}
                 </span>
               </div>
+              <div className="flex items-center mb-2">
+                <span className="text-red-600 text-l mr-2 capitalize">Pick up Location:</span>
+                <span className="text-black font-semibold capitalize">{car.city}</span>
+              </div>
               <div className="flex items-center mb-4">
-                <span className="text-gray-600 text-sm mr-2">
+                <span className="text-red-600 text-l mr-2 ">
                   DropOff Location
                 </span>
                <CarLocation onLocationChange={ handleLocationChange} />
               </div>
               <div className="flex items-center mb-4">
-                <span className="text-gray-600 text-sm mr-2">
+                <span className="text-red-600 text-l mr-2">
                   Rental Period:
                 </span>
                 
                 <DatePicker
-                  className="text-black font-semibold ml-2"
+                  className=" font-semibold ml-2 rounded-lg border  px-3 py-2 bg-slate-300"
                   selected={startDate}
                   onChange={(date) => {
-                    const dateTime=date
-                    dateTime.setHours(10,0,0,0)
-                    setStartDate(dateTime)
+                    const formattedDate = moment(date).set({ hour: 9, minute: 0, second: 0, millisecond: 0 })
+                    setStartDate(formattedDate.toDate())
                   }}
                   minDate={new Date()}
                   filterDate={isDateDisabled} // Use a custom function to disable specific dates
                   showDisabledMonthNavigation
                   placeholderText="dd-mm-yyyy"
+                  dateFormat="MMMM d, yyyy h:mm aa"
                 />
-                <span className="text-black font-semibold">to</span>
+                <span className="text-black font-semibold m-2">to</span>
                
                 <DatePicker
-                  className="text-black font-semibold ml-2"
+                  className="font-semibold ml-2 rounded-lg border px-3 py-2 bg-slate-300"
                   selected={endDate}
                   onChange={(date) => {
-                    const dateTime=date
-                    dateTime.setHours(21,0,0,0)
-                    
-                    setEndDate(dateTime)}}
+                    const formattedDate = moment(date).set({ hour: 21, minute: 0, second: 0, millisecond: 0 })
+
+                   
+                    setEndDate(formattedDate.toDate())}}
                   minDate={new Date()}
                   filterDate={isDateDisabled} // Use a custom function to disable specific dates
+
                   showDisabledMonthNavigation
                   placeholderText="dd-mm-yyyy"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+
                 />
               </div>
 
@@ -314,7 +318,7 @@ const CarDetails = () => {
       </main>
       <div className="flex justify-center">
         <button
-          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+          className="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900"
           onClick={handleNext}
         >
           Rent Now

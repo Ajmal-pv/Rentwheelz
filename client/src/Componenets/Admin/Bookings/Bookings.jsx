@@ -74,15 +74,15 @@ function Bookings() {
   <table className="min-w-full rounded-lg overflow-hidden bg-white border border-gray-300">
     <thead>
       <tr>
-        <th className="py-2 px-4 border-b border-gray-300 text-left">RC number</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">RC number</th>
        
-        <th className="py-2 px-4 border-b border-gray-300 text-left">user</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">user</th>
         
         
-        <th className="py-2 px-4 border-b border-gray-300 text-left">startDate</th>
-        <th className="py-2 px-4 border-b border-gray-300 text-left">endDate</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">startDate</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">endDate</th>
         
-        <th className="py-2 px-4 border-b border-gray-300 text-left">status</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">status</th>
        
 
 
@@ -90,25 +90,25 @@ function Bookings() {
         {/* ... Add more headers as needed */}
       </tr>
     </thead>
-    <tbody>
+    <tbody >
   {bookings1.length === 0 ? (
     <tr>
-      <td colSpan="5" className="py-2 px-4 text-center">
+      <td colSpan="5" className="py-4 px-4 text-center">
         No bookings
       </td>
     </tr>
   ) : (
     bookings1.map((booking) => (
       <tr key={booking._id}>
-        <td className="py-2 px-4 border-b border-gray-300">
+        <td className="py-4 px-4 border-b border-gray-300">
           <p>{booking.car.RegistrationNumber}</p>
         </td>
-        <td className="py-2 px-4 border-b border-gray-300">{booking.user.name}</td>
+        <td className="py-4 px-8 border-b border-gray-300">{booking.user.name}</td>
 
-        <td className="py-2 px-4 border-b border-gray-300">{booking.startDate}</td>
-        <td className="py-2 px-4 border-b border-gray-300">{booking.endDate}</td>
+        <td className="py-10 px-10 border-b border-gray-300">{booking.startDate}</td>
+        <td className="py-4 px-6 border-b border-gray-300">{booking.endDate}</td>
         <td
-          className={`py-2 px-4 border-b border-gray-300 ${
+          className={`py-4 px-6 border-b border-gray-300 ${
             booking.status === 'upcoming'
               ? 'text-green-600'
               : booking.status === 'ongoing'

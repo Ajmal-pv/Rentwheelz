@@ -34,7 +34,8 @@ function Login() {
             id: result.id,
             email: result.email,
             mobile: result.mobile,
-            host:result.host
+            host:result.host,
+            wallet:result.wallet
           }));
           
           localStorage.setItem('userToken',result.token)

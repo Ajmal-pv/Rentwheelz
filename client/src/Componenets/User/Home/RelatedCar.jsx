@@ -121,7 +121,7 @@ const [heading,setHeading]=useState('')
       </div>
           </div>
           <button  onClick={()=>{
-            navigate(`cars/cardetails?id=${car._id}`)
+            navigate(`/cars/cardetails?id=${car._id}`)
           }} className="flex items-center w-full justify-center rounded-md bg-slate-900 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
             
             Rent the Car

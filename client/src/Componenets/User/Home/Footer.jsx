@@ -14,7 +14,7 @@ function Footer() {
               <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
               <ul className="text-sm">
                 <li className="mb-2"><a href="#">Home</a></li>
-                <li className="mb-2"><a href="#">Cars</a></li>
+                <li className="mb-2"><a href="/cars">Cars</a></li>
                 <li className="mb-2"><a href="#">Pricing</a></li>
                 <li className="mb-2"><a href="#">About Us</a></li>
                 <li className="mb-2"><a href="#">Contact</a></li>

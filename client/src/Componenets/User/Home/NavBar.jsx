@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userLogin, userLogout } from "../../../store/userSlice";
 import { Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const { SubMenu } = Menu;
@@ -16,6 +17,7 @@ const Navbar = () => {
   const [logout, setLogout] = useState(false);
   const [host, setHost] = useState(false);
   const [user, setUser] = useState(false);
+  const [userDetails,setUserDetails]=useState(null)
   const dropdownRef = useRef(null);
 
   const closeDropdown = () => {
@@ -26,7 +28,7 @@ const Navbar = () => {
     setHost(false);
     setLogout(true);
   };
-
+ 
   useEffect(() => {
     if (logout) {
       localStorage.removeItem("userToken");
@@ -49,6 +51,7 @@ const Navbar = () => {
     if (userDataJSON) {
       const userData = JSON.parse(userDataJSON);
 
+      setUserDetails(userData.wallet)
       const hostData = userData.host;
 
       if (hostData) {
@@ -71,13 +74,24 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleWallet = ()=>{
+      
+      Swal.fire({
+        title: 'Wallet Balance',
+        text: `Your wallet balance is ${userDetails}`,
+        icon: 'info',
+        confirmButtonText: 'Close',
+      });
+    };
+  
+
   return (
-    <nav className=" border-t-2 border-b-2 bg-border-gray-200 h-[10vh] top-0 sticky z-50  bg-zinc-50">
+    <nav className=" border-t-2 border-b-2 bg-border-gray-200 h-[10vh] top-0 sticky z-50  bg-white ">
       <div className="container mx-auto  h-full  ">
         <div className=" h-full flex justify-between items-center py-4">
           <div className="relative md:hidden">
             <button
-              className="text-white hover:text-gray-300 focus:outline-none"
+              className="text-black hover:text-gray-300 focus:outline-none"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               menu
@@ -127,7 +141,8 @@ const Navbar = () => {
               <div className="hidden md:flex space-x-10 ">
                 <Link
                   to="/cars"
-                  className="text-gray-950 hover:text-blue-500 transition-colors duration-300 text-l"
+                  
+                  className="text-gray-950 hover:text-blue-500  transition-colors duration-300 text-l"
                 >
                   CARS
                 </Link>
@@ -184,6 +199,12 @@ const Navbar = () => {
                       className="block px-4 py-2 text-gray-700 "
                     >
                       MY CARS
+                    </Link>
+                    <Link
+                      onClick={handleWallet}
+                      className="block px-4 py-2 text-gray-700 "
+                    >
+                      WALLET
                     </Link>
                     <Link
                       onClick={handleLogout}

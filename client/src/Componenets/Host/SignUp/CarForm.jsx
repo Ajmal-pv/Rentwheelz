@@ -10,7 +10,7 @@ import axios from "axios";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, storage } from "../../firebase/config";
 import {GoogleMap,useLoadScript,MarkerF} from '@react-google-maps/api'
-
+import { showLoading,hideLoading } from "../../../store/alertSlice";
 
 function CarForm() {
    
@@ -40,7 +40,7 @@ function CarForm() {
 
 
   const initialValues = {
-   
+    
     carModel: "",
     discription:'',
     city: "",
@@ -50,7 +50,6 @@ function CarForm() {
     carVariant: "",
     yearOfManufacture: "",
     transmissionType: "manual",
-    monthsOfRenting: "",
     carColor:'',
     RegistrationNumber:''
   };
@@ -60,15 +59,8 @@ function CarForm() {
     const imageFiles = selectedImages;
     const documentFiles=selectedDocuments
 
-    // const uploadPromises = imageFiles.map((imageFile) => {
-    //   const storageRef = ref(storage, "images/" + imageFile.name);
-    
-    //   return uploadBytes(storageRef, imageFile)
-    //     .then((snapshot) => getDownloadURL(storageRef))
-    //     .then((url) => {
-    //       downloadUrls.push(url);
-    //     });
-    // });
+
+  dispatch(showLoading())
     const uploadImagePromises = imageFiles.map((imageFile) => {
       const storageRef = ref(storage, "images/" + imageFile.name);
     
@@ -97,12 +89,13 @@ function CarForm() {
         return  addCar(values, downloadUrls, host)})
             .then((res) => {
               if (res.data.status) {
-               
+               dispatch(hideLoading())
                   navigate("/host/login");
                 
               }
             })
             .catch((error) => {
+              dispatch(hideLoading())
               toast.error(error.message);
             });
         
@@ -307,7 +300,7 @@ function CarForm() {
                     Car Variant:
                   </label>
                   <input
-                    defaultValue={formik.values.carVarient}
+                    defaultValue={formik.values.carVariant}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     type="text"
@@ -316,8 +309,8 @@ function CarForm() {
                     required
                     className="mt-1 p-2 border rounded w-full"
                   />
-                  {formik.errors.carVarient && formik.touched.carVarient && (
-                    <div className="error">{formik.errors.carVarient}</div>
+                  {formik.errors.carVariant && formik.touched.carVariant && (
+                    <div className="error">{formik.errors.carVariant}</div>
                   )}
                 </div>
 

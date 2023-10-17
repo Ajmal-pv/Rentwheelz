@@ -13,7 +13,7 @@ function ChatBox({chat,currentUser,setSendMessage,recieveMessage}) {
     
     
     useEffect(() => {
-      if (recieveMessage !== null && recieveMessage?.chatId === chat?._id) {
+      if (recieveMessage !== null ) {
         setMessages([...messages, recieveMessage]);
       }
     }, [recieveMessage]);
@@ -29,7 +29,7 @@ useEffect(()=>{
         const getUserData=async()=>{
             try {  
                 const {data}= await getUser(userId)
-                console.log('1',data);
+                
                 
            setUserData(data)
             } catch (error) {
@@ -43,11 +43,11 @@ useEffect(()=>{
     const fetchMessages= async ()=>{
         try {
             const {data}=await getMessages(chat._id)
-            console.log('2',data);
+           
             setMessages(data)
         } catch (error) {
             console.log(error);
-            console.log('this');
+            
         }
     }
     if(chat !== null) fetchMessages()
@@ -75,7 +75,7 @@ const handleMessage= async (e)=>{
    const recieverId = chat.members.find((id) => id !== currentUser);
 
 
-   console.log('recieber',recieverId);
+  
    setSendMessage({...message,recieverId})
 }
 
@@ -121,9 +121,7 @@ const handleMessage= async (e)=>{
             
             <InputEmoji
   value={newMessage}
-  onChange={(value) => {
-    setNewMessage(value); // Update the state with the new value
-  }}
+  onChange={(value)=>{handleSend(value)}}
 />
              
 

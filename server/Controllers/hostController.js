@@ -160,18 +160,17 @@ module.exports = {
       const newCar = new Car({
         hostId: hostFind._id,
         RegistrationNumber: values.RegistrationNumber,
-        discription: values.discription,
+        description: values.discription,
         color: values.carColor,
-        carModel: values.carModel,
-        city: query,
+        model: values.carModel,
+        pickUpArea: query,
         fuelType: values.fuelType,
         kmDriven: values.kmDriven,
 
-        carBrand: values.carBrand,
-        carVariant: values.carVariant,
+        Brand: values.carBrand,
+        Variant: values.carVariant,
         yearOfManufacture: values.yearOfManufacture,
         transmissionType: values.transmissionType,
-        monthsOfRenting: values.monthsOfRenting,
         images: downloadedUrls,
         RcImages: downloadDocumentUrls,
       });
@@ -203,20 +202,20 @@ module.exports = {
   hostSignin: async (req, res) => {
     try {
       const HostLOGIN = {
-        status: false,
-        message: null,
+       
+        
         token: null,
         name: null,
         id: null,
         host: null,
-        user: false,
+       
       };
       const { email, password } = req.body;
       const host = await Host.findOne({ email });
 
       if (!host) {
-        HostLOGIN.message = "Your email is not registered";
-        return res.send({ HostLOGIN });
+       
+        return res.status(401).send('Your email is not registered');
       }
 
       const isMatch = await bcrypt.compare(password, host.password);
@@ -231,16 +230,17 @@ module.exports = {
           }
         );
 
-        HostLOGIN.status = true;
+       
         HostLOGIN.token = token;
         HostLOGIN.id = host._id;
         HostLOGIN.name = host.name;
         HostLOGIN.host = host;
 
+
         res.status(200).send({ HostLOGIN });
       } else {
-        HostLOGIN.message = "Password is wrong";
-        res.send({ HostLOGIN });
+       
+        res.status(401).send('password is wrong ');
       }
     } catch (error) {
       console.log(error.message);
@@ -334,6 +334,7 @@ module.exports = {
       if(booking){
         booking.status='Cancelled'
         booking.cancelReason=reason
+        booking.cancelledby='host'
         const BookingData = booking.save()
         if(BookingData){
 

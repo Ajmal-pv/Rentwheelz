@@ -117,7 +117,7 @@ module.exports = {
       const userLOGIN = {
         status: false,
         message: null,
-
+        wallet:null,
         name: null,
         id: null,
         email: null,
@@ -163,6 +163,7 @@ module.exports = {
         userLOGIN.email = user.email;
         userLOGIN.mobile = user.mobile;
         userLOGIN.token = token;
+        userLOGIN.wallet =user.wallet
 
         res.status(200).send({ userLOGIN });
       } else {
@@ -298,16 +299,20 @@ module.exports = {
         }
   
         
-      
-      
+        const currentDate = new Date();
+        console.log(currentDate);     
+   
       const cars = await Car.find({
         is_subscribed: false,
         approved: "Approved",
         isCarRented: true,
         approved: { $ne: "Blocked" },
+        startDate: { $lte: currentDate },
+        endDate: { $gte: currentDate },
+
       });
 
-      
+      console.log(cars.length);
 
       if (cars && result) {
         return res.send({ status: true, cars: cars,result:result });
@@ -414,9 +419,12 @@ module.exports = {
   },
   orderCreation: async (req, res) => {
     try {
-      const { startDate, endDate, carId, userId, hostId,dropOff,pickup } = req.body.orderData;
+      const { startDate, endDate, carId, userId, hostId,dropOff,pickup,TotalAmount,method } = req.body.orderData;
 
-      console.log(startDate);
+    
+      const car = await Car.findOne({ _id: carId });
+      
+
 
       const order = new Order({
         startDate: startDate,
@@ -426,11 +434,52 @@ module.exports = {
         host: hostId,
         pickupLocation:pickup,
         dropOffLocation:dropOff,
-        deposit:3000
+        deposit:3000,
+        totalAmount:TotalAmount,
+        paymentMethod:method
       });
+
+
+
       const orderSave = await order.save();
+
+      if(method === 'Wallet'){
+        const userUpdate = await User.findOne({_id:userId})
+        userUpdate.wallet -= TotalAmount
+        userUpdate.save()
+       
+      }
+
       if (orderSave) {
-        // Send a success response back to the client
+        
+        const orders = await Order.find({ car: carId }, { startDate: 1, endDate: 1, _id: 0 });
+
+        const carDates = orders.map((order) => ({
+          startDate: order.startDate,
+          endDate: order.endDate,
+        }));
+      
+        const carTimeframe = [
+          {
+            startDate: car.startDate,
+            endDate: car.endDate,
+          },
+        ];
+      
+        // Check if there are gaps between the car's timeframe and the booked orders
+        const carIsCompletelyBooked = carTimeframe.every((timeframe) => {
+          return carDates.some((orderDate) => {
+            return (
+              new Date(timeframe.startDate) >= new Date(orderDate.startDate) &&
+              new Date(timeframe.endDate) <= new Date(orderDate.endDate)
+            );
+          });
+        });
+      
+        // If the car is completely booked, update the slotBooked field
+        if (carIsCompletelyBooked) {
+          await Car.updateOne({ _id: carId }, { slotCompleted: true });
+        }
         res
           .status(200)
           .json({
@@ -461,7 +510,6 @@ module.exports = {
           endDate: order.endDate,
         }));
 
-        console.log(carDates);
         res
           .status(200)
           .json({ message: "date found", status: true, carDates: carDates });
@@ -520,7 +568,8 @@ module.exports = {
       const userBooking = await Order.find({ user: userId })
         .populate("car")
         .populate("user")
-        .populate("host");
+        .populate("host")
+        .sort({_id:-1})
       if (!userBooking) {
         return res
           .status(404)
@@ -532,4 +581,57 @@ module.exports = {
       return res.status(500).json({ message: "Internal server error" });
     }
   },
+  cancelBooking: async(req,res) =>{
+    try {
+      const {BookingId,reason,userId} = req.body
+      const booking = await Order.findOne({_id:BookingId})
+    
+      if(booking){
+
+
+        booking.status='Cancelled'
+        booking.cancelReason=reason
+        booking.cancelledby='user'
+        
+
+        const totalAmount= booking.totalAmount
+         const refund= totalAmount-100
+
+
+        const user = await User.findOne({_id:userId})
+          user.wallet+=refund
+          user.save()
+         booking.paymentStatus='Refunded'
+         booking.refund.Amount=refund
+         booking.refund.method='Wallet'
+             
+        const BookingData = booking.save()
+        if(BookingData){
+
+        return res.send({ message: 'booking Cancelled', bookingCancel: true })
+      }
+      }
+
+
+
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  getwallet: async (req,res)=>{
+    try {
+      const userId= req.query.id;
+   const user = await User.findOne({_id:userId})
+      
+  if(user){
+    const wallet= user.wallet
+    return res.status(200).json(wallet)
+  }
+      
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  }
 };

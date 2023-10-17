@@ -72,7 +72,7 @@ function User() {
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelled", "Blocking operation cancelled", "error");
       }
-    });
+    }); 
   };
   const [users, setUsers] = useState([]);
   useEffect(() => {

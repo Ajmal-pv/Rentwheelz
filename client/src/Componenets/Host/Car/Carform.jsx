@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import {CloseOutlined} from '@ant-design/icons'
-
+import { showLoading,hideLoading } from "../../../store/alertSlice";
 
 import { addCar } from "../../../services/host-service";
 import { app, storage } from "../../firebase/config";
@@ -19,7 +19,7 @@ import CarLocation from "../../User/Car/CarLocation";
 function NewCarForm({ isOpen, onClose }) {
 
 
-
+   const dispatch=useDispatch()
   const [query, setQuery] = useState('');
 
   
@@ -101,47 +101,14 @@ function NewCarForm({ isOpen, onClose }) {
       setSelectedDocuments(files)
    }
   }
-  const dispatch = useDispatch();
+  
   const location = useLocation();
   const downloadUrls = [];
   const downloadDocumentUrls=[];
   const queryParams = new URLSearchParams(location.search);
 
 
-  // const handleScriptLoad = (updateQuery, autoCompleteRef) => {
-  //   autoComplete = new window.google.maps.places.Autocomplete(
-  //     autoCompleteRef.current,
-  //     {
-  //       // types: ["(cities)"],
-  //       componentRestrictions: { country: "IN" },
-  //     }
-  //   );
-
-  //   autoComplete.addListener("place_changed", () => {
-  //     handlePlaceSelect(updateQuery);
-  //   });
-  // };
-  // const handlePlaceSelect = async (updateQuery) => {
-  //   const addressObject = await autoComplete.getPlace();
-
-  //   const query = addressObject.formatted_address;
-  //   updateQuery(query);
-  //   console.log({ query });
-
-  //   const latLng = {
-  //     lat: addressObject?.geometry?.location?.lat(),
-  //     lng: addressObject?.geometry?.location?.lng(),
-  //   };
-
-  //   console.log({ latLng });
-  //   setSelectedLocation(latLng);
-  // };
-  // useEffect(() => {
-  //   loadScript(
-  //     `https://maps.googleapis.com/maps/api/js?key=AIzaSyDe-UudexGTA40PFaMX6BLxuhiabSsXvYY&libraries=places`,
-  //     () => handleScriptLoad(setQuery, autoCompleteRef)
-  //   );
-  // }, []);
+  
 
   const initialValues = {
    
@@ -171,17 +138,8 @@ function NewCarForm({ isOpen, onClose }) {
       toast.error("images selected are wrong type,select images only");
       return; // Exit the function
   }
- 
+     dispatch(showLoading())
 
-    // const uploadPromises = imageFiles.map((imageFile) => {
-    //   const storageRef = ref(storage, "images/" + imageFile.name);
-    
-    //   return uploadBytes(storageRef, imageFile)
-    //     .then((snapshot) => getDownloadURL(storageRef))
-    //     .then((url) => {
-    //       downloadUrls.push(url);
-    //     });
-    // });
     const uploadImagePromises = imageFiles.map((imageFile) => {
         const storageRef = ref(storage, "images/" + imageFile.name);
       
@@ -212,9 +170,12 @@ function NewCarForm({ isOpen, onClose }) {
             .then((res) => {
                 
               if (res.data.status) {
+                
                 onClose()
+                dispatch(hideLoading())
                 navigate('/host/cars')
               }else{
+                dispatch(hideLoading())
                 toast.error('car add failure')
               }
             })

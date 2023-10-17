@@ -16,9 +16,17 @@ const orderSchema = new mongoose.Schema({
     cancelReason:{
       type:String
     },
+    cancelledby:{type:String},
+    paymentStatus:{type:String,
+    default:'paid'},
     pickupLocation:{type:String},
     dropOffLocation:{type:String},
-    deposit:{typr:String}
+    deposit:{type:String},
+    totalAmount:{type:Number,required:true},
+    refund:{
+      Amount:{type:Number},
+      method:{type:String}
+    }
 });
 orderSchema.pre('save', function (next) {
     const currentDate = new Date();

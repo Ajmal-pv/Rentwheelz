@@ -31,7 +31,7 @@ function Login() {
         const login = "login";
        
 
-        if (result.status && is_car) {
+        if (is_car) {
         
           dispatch(hostLogin({hostId:result.id}));
           localStorage.setItem('hostToken',result.token);
@@ -46,7 +46,8 @@ function Login() {
         }
       })
       .catch((err) => {
-        toast.error(err.message);
+       
+        toast.error(err.response.data);
       });
   };
 
