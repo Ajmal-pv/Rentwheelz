@@ -3,7 +3,7 @@ import React, { useState,useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import Modal from 'react-modal';
-import BannerForm from './bannerForm';
+import BannerForm from './BannerForm';
 
 
 function Car() {
