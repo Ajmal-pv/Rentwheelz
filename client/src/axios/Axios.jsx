@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 
-const baseURL = 'http://localhost:5000/';
+const baseURL = import.meta.env.VITE_baseUrl
 const userBaseURL = baseURL
 
 const adminBaseURL = `${baseURL}admin`;
