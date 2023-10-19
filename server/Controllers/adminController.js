@@ -76,7 +76,7 @@ module.exports = {
   cars: async (req, res) => {
     try {
 
-      const cars = await Car.find().populate('hostId');
+      const cars = await Car.find().populate('hostId').sort({_id:-1});
       const blockedCars = cars.filter(car => car.approved === 'Blocked');
       const pendingCars = cars.filter(car => car.approved === 'Pending');
       const approvedCars = cars.filter(car => car.approved === 'Approved');
@@ -92,9 +92,6 @@ module.exports = {
       pendingCars.reverse();
       approvedCars.reverse();
 
-      console.log('Blocked Cars:', blockedCars);
-      console.log('Pending Cars:', pendingCars);
-      console.log('Approved Cars:', approvedCars);
 
 
       if (cars) {
@@ -132,7 +129,7 @@ module.exports = {
   },
   hosts: async (req, res) => {
     try {
-      const hosts = await Host.find()
+      const hosts = await Host.find().sort({_id:-1})
 
       if (hosts) {
         res.send({ hostData: hosts, hosts: true })
@@ -148,7 +145,7 @@ module.exports = {
   },
   users: async (req, res) => {
     try {
-      const users = await User.find()
+      const users = await User.find().sort({_id:-1})
       if (users) {
         res.send({ userData: users, users: true })
       } else {
@@ -217,11 +214,11 @@ module.exports = {
   },
   carApproval: async (req, res) => {
     try {
-      console.log(req.body);
+     
       const { carId, rentalPrice } = req.body
       const carInfo = await Car.findOne({ _id: carId }).populate('hostId')
       if (carInfo) {
-        carInfo.approved = 'Approved'
+        carInfo.status = 'Approved'
         carInfo.rentalPrice = rentalPrice;
         const updatedCar = await carInfo.save();
         if (updatedCar) {
@@ -291,7 +288,7 @@ module.exports = {
   },
   bookingDetails: async (req, res) => {
     try {
-      const bookings = await Order.find().populate('car').populate('user').populate('host')
+      const bookings = await Order.find().populate('car').populate('user').populate('host').sort({_id:-1})
       const upcoming = bookings.filter(order => order.status === 'upcoming');
       const completed = bookings.filter(order => order.status === 'completed');
       const ongoing = bookings.filter(order => order.status === 'ongoing');
@@ -314,6 +311,23 @@ module.exports = {
 
 
 
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  orderedCars : async(req,res)=>{
+    try {
+      const adminCars = await Order.find({ 
+        status: { $in: ["completed", "Cancelled"] }
+       })
+      .populate("car")
+      .populate("user")
+      .populate('host')
+      .sort({_id:-1})
+    if (adminCars) {
+      res.send({ Bookings:adminCars, status: true });
+    }
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");

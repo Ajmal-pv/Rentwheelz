@@ -266,7 +266,7 @@ module.exports = {
   hostCars: async (req, res) => {
     try {
       const hostId = req.query.id;
-      const hostCars = await Car.find({ hostId: hostId });
+      const hostCars = await Car.find({ hostId: hostId }).sort({_id:-1});
 
       if (hostCars) {
         res.send({ status: true, Cars: hostCars });
@@ -298,8 +298,8 @@ module.exports = {
       const { carId, startDate, endDate } = req.body;
       const car = await Car.findOne({ _id: carId });
       if (car) {
-        car.rentalStartDate = startDate;
-        car.rentalEndDate = endDate;
+        car.startDate = startDate;
+        car.endDate = endDate;
         car.isCarRented = true;
         const carData = car.save();
         if (carData) {
@@ -318,9 +318,12 @@ module.exports = {
       const hostId = req.query.id;
       const hostCars = await Order.find({ host: hostId })
         .populate("car")
-        .populate("user");
+        .populate("user").sort({_id:-1});
+        console.log(hostCars,'hello');
       if (hostCars) {
         res.send({ Bookings: hostCars, status: true });
+      }else{
+        res.send({status:false})
       }
     } catch (error) {
       console.log(error.message);
@@ -335,12 +338,37 @@ module.exports = {
         booking.status='Cancelled'
         booking.cancelReason=reason
         booking.cancelledby='host'
+        const user = booking.user
+
+        const userFind = await User.findOne({_id:user})
+        userFind.wallet += booking.totalAmount
+        booking.refund.method='wallet'
+        booking.refund.Amount= booking.totalAmount
+        booking.paymentStatus = 'Refunded'
+        const userData = userFind.save()
         const BookingData = booking.save()
-        if(BookingData){
+        if(BookingData && userData){
 
         return res.send({ message: 'booking Canceled', bookingCancel: true })
       }
       }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  paymentsCar: async(req,res)=>{
+    try {
+      const hostId = req.query.id;
+      const hostCars = await Order.find({ host: hostId,
+        status: { $in: ["completed", "Cancelled"] }
+       })
+      .populate("car")
+      .populate("user").sort({_id:-1})
+    if (hostCars) {
+      res.send({ Bookings: hostCars, status: true });
+    }
+      
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");

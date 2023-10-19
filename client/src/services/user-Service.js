@@ -80,6 +80,9 @@ export const addMessage=(data)=>{
 export const cancelBooking=(BookingId,reason,userId)=>{
   return api.post('/cancelbooking', {BookingId,reason,userId }, { withCredentials: true })
 }
+export const cancelBookingOngoing=(BookingId,reason,userId)=>{
+  return api.post('/cancelbookingOngoing', {BookingId,reason,userId }, { withCredentials: true })
+}
 
 export const  getWallet=(userId)=>{
   return api.get(`/getwallet?id=${userId}`)

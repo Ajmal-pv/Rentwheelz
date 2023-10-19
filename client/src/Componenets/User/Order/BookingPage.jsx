@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { cancelBooking, getUserBooking } from "../../../services/user-Service";
+import { cancelBooking, cancelBookingOngoing, getUserBooking } from "../../../services/user-Service";
 import { Toaster, toast } from "react-hot-toast";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -64,6 +64,49 @@ function BookingPage() {
         Swal.fire( "Blocking operation cancelled", "error");
       }
     });
+  }
+  const handleOngoingcancel = (bookingId,userId)=>{
+    Swal.fire({
+      title: "Cancel Booking ?",
+      input: "text",
+      icon: "warning",
+      inputLabel: " Only the deposit money of 3000 will be refunded ",
+      inputPlaceholder: "Enter reason for cancel here...",
+      showCancelButton: true,
+      confirmButtonText: "Block",
+      cancelButtonText: "Cancel",
+      showLoaderOnConfirm: true,
+      preConfirm: (reason) => {
+        if (!reason) {
+          Swal.showValidationMessage(
+            "Please enter a reason for Cancel the booking"
+          )
+        }
+         else {
+          
+        return cancelBookingOngoing(bookingId, reason,userId)
+            .then((response) => {
+              if (response.data.bookingCancel) {
+                return response.data.message;
+              } else {
+                throw new Error(response.data.message);
+              }
+            })
+            .catch((error) => {
+              Swal.showValidationMessage(`Error: ${error.message}`);
+            })
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire(`Cancelled!, Refund is initiated `, "success");
+        // You can also update your component's state or perform any other necessary actions
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire( "Blocking operation cancelled", "error");
+      }
+    });
+
   }
 
   useEffect(() => {
@@ -281,9 +324,9 @@ function BookingPage() {
                           
                          <Button type="primary" danger onClick={ ()=>{handlecancel(booking._id,userId)} }>Cancel</Button>
                         ) : booking.status === 'ongoing' ? (
-                          <Button type="default" danger onClick={ ()=>{handlecancel(booking._id)} }>Return</Button>
+                          <Button type="default" danger onClick={ ()=>{handleOngoingcancel(booking._id,userId)} }>Return</Button>
                         ) : booking.status === 'completed' ? (
-                          <Button type="primary" danger >View</Button>
+                         <span className="text-green-700">Completed</span>
                         ) : booking.status === 'Cancelled' ? (
                           <div>
                           <span onClick={()=>{

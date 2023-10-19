@@ -122,7 +122,7 @@ function ChatComponent() {
         </div>
         <div className='w-full '>
 
-            <ChatBox chat={currentChat} currentUser={userId} setSendMessage={setSendMessage} recieveMessage={recieveMessage} />
+            <ChatBox chat={currentChat} currentUser={userId} setSendMessage={setSendMessage} recieveMessage={recieveMessage}  />
         </div>
       </div>
     </div>

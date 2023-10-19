@@ -16,7 +16,11 @@ const NewPasswordForm = () => {
   const validationSchema = Yup.object({
     newPassword: Yup.string()
       .required("New password is required")
-      .min(6, "Password must be at least 6 characters long"),
+      .min(6, "Password must be at least 6 characters long") 
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one digit"
+      ),
     confirmPassword: Yup.string()
       .required("Confirm password is required")
       .oneOf([Yup.ref("newPassword"), null], "Passwords must match"),
@@ -47,7 +51,7 @@ const NewPasswordForm = () => {
         }
       });
     setSubmitting(false);
-  };
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

@@ -32,4 +32,16 @@ const carSchema = new mongoose.Schema({
 
 const Car = mongoose.model("Car", carSchema);
 
+// Create a middleware function to handle the automatic update
+carSchema.pre("save", function (next) {
+  // Check if the endDate is less than the current date
+  if (this.endDate && this.endDate < new Date()) {
+    // Update the fields
+    this.isCarRented = false;
+    this.startDate = null;
+    this.endDate = null;
+  }
+  next();
+});
+
 module.exports = Car;

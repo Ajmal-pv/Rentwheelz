@@ -16,6 +16,7 @@ import PrivateRoute from "../Componenets/Admin/Routes/PrivateRoute";
 import AdminBanner from "../Pages/Admin/AdminBanner";
 import AdminBooking from "../Pages/Admin/AdminBooking";
 import NotFound from "../Pages/error/NotFound";
+import AdminPayment from "../Pages/Admin/AdminPayment";
 
 function Admin() {
   return (
@@ -38,6 +39,7 @@ function Admin() {
           <Route path="/banner" element={<AdminBanner />} />
           
           <Route path="/bookings" element={<AdminBooking />} />
+          <Route path="/payments" element={<AdminPayment />} />
         </Route>
         <Route
         path="*"

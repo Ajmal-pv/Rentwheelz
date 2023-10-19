@@ -91,6 +91,7 @@ function Car() {
             <th className="py-2 px-4 border-b border-gray-300 text-left">Monthly rent</th>
            
             <th className="py-2 px-4 border-b border-gray-300 text-left">Verification</th>
+            <th className="py-2 px-4 border-b border-gray-300 text-left">current status</th>
             <th className="py-2 px-4 border-b border-gray-300 text-left">Details</th>
 
 
@@ -110,12 +111,12 @@ function Car() {
 
             
             </td>
-            <td className="py-2 px-4 border-b border-gray-300">{car.carBrand}</td>
-            <td className="py-2 px-4 border-b border-gray-300">{car.carModel}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.Brand}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.model}</td>
            
             <td className="py-2 px-4 border-b border-gray-300">{car.rentalPrice}</td>
-            <td className={`py-2 px-4 border-b border-gray-300 ${car.approved === 'Approved' ? 'text-green-600' : car.approved === 'Rejected' ? 'text-red-600' : car.approved === 'Blocked' ? 'text-red-600' : 'text-yellow-600'}`}>{car.approved}</td>
-            
+            <td className={`py-2 px-4 border-b border-gray-300 ${car.status === 'Approved' ? 'text-green-600' : car.status === 'Rejected' ? 'text-red-600' : car.status === 'Blocked' ? 'text-red-600' : 'text-yellow-600'}`}>{car.status}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.isCarRented === true ? ( <span>Active</span> ) : <span>Not Active</span> }</td>
             <td className="py-2 px-4 border-b border-gray-300">
             <Link
     to={`/host/cardetails?id=${car._id}`}

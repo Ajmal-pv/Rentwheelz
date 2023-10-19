@@ -41,11 +41,7 @@ function Sidebar() {
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
-          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host","/host/dashboard"]) ? "bg-slate-500" : ""}`}>
-            <Link to="/host" className="block text-l">
-              Dashboard
-            </Link>
-          </li>
+          
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/cars",'/host/cardetails']) ? "bg-slate-500" : ""}`}>
             <Link to="/host/cars" className="block text-l">
               Cars
@@ -57,7 +53,7 @@ function Sidebar() {
             </Link>
           </li>
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/payments"]) ? "bg-slate-500" : ""}`}>
-            <Link to="" className="block text-l">
+            <Link to="/host/payments" className="block text-l">
               Payments
             </Link>
           </li>

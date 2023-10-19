@@ -41,7 +41,7 @@ function CarDetails() {
               console.log(err);
             });
         }
-      }, [verificationDone]);
+      }, [verificationDone,onclose]);
 
   return (
     <div className=" w-full p-4 ">
@@ -54,13 +54,13 @@ function CarDetails() {
         <div className="flex flex-col items-start space-y-1 text-l leading-8 ">
           <h1>
             <span className="font-bold">License Number:</span>{" "}
-            {car.licenseNumber}
+            {car.RegistrationNumber}
           </h1>
           <h1>
-            <span className="font-bold">Car Model:</span> {car.carModel}
+            <span className="font-bold">Car Model:</span> {car.model}
           </h1>
           <h1>
-            <span className="font-bold">City:</span> {car.city}
+            <span className="font-bold">City:</span> {car.pickUpArea}
           </h1>
           <h1>
             <span className="font-bold">Fuel Type:</span> {car.fuelType}
@@ -70,10 +70,10 @@ function CarDetails() {
             {car.kmDriven}
           </h1>
           <h1>
-            <span className="font-bold">Car Brand:</span> {car.carBrand}
+            <span className="font-bold">Car Brand:</span> {car.Brand}
           </h1>
           <h1>
-            <span className="font-bold">Car Variant:</span> {car.carVariant}
+            <span className="font-bold">Car Variant:</span> {car.Variant}
           </h1>
           <h1>
             <span className="font-bold">Year of Manufacture:</span>{" "}
@@ -165,10 +165,11 @@ function CarDetails() {
         <div className="flex flex-col items-center border-4 border-white-500 rounded-lg h-full ml-4 w-1/4">
           <div className="h-full flex flex-col justify-center items-start space-y-2 text-l leading-8">
             <p className="font-bold">End Date of Rental:</p>
-            <p>{car.rentalEndDate}</p>
+            <p>{car.endDate}</p>
           </div>
         </div>
-      ) : (<div className="flex flex-col items-center border-4 border-white-500 rounded-lg h-full ml-4 w-1/4">
+      ) : !car.isCarRented && car.status === 'Approved' ? (
+      <div className="flex flex-col items-center border-4 border-white-500 rounded-lg h-full ml-4 w-1/4">
         <div className="h-full flex flex-col justify-center items-start space-y-2 text-l leading-8">
           <input
             type="date"
@@ -194,7 +195,34 @@ function CarDetails() {
       </div>
       
    
-      )}
+      ):car.status === 'Blocked' && car.status === 'Rejected' ? (
+<div className="flex flex-col items-center border-4 border-white-500 rounded-lg h-full ml-4 w-1/4">
+        <div className="h-full flex flex-col justify-center items-start space-y-2 text-l leading-8">
+          
+       {car.status === 'Blocked' ? (
+        <div> 
+           <span>Your car has been blocked by Admin</span>
+           {/* <h4>Reason : {car.blockReason}</h4> */}
+        </div>
+       
+       ): car.status === 'Rejected' ? (
+        <div>
+          <span>Your car has been Rejected by Admin</span>
+           <h4>Reason : {car.rejectingCause}</h4>
+        </div>
+       ):null}   
+
+          </div>
+          </div>
+      ):(
+        <div className="flex flex-col items-center border-4 border-white-500 rounded-lg h-full ml-4 w-1/4">
+        <div className="h-full flex flex-col justify-center items-start space-y-2 text-l leading-8">
+           <h4>Your car has not been verified yet. We will email you once it is verified</h4>
+
+          </div>
+          </div>
+      )
+      }
     </div>
     
 

@@ -287,7 +287,7 @@ module.exports = {
             _id: null,
             distinctBrands: { $addToSet: '$Brand' },
             distinctColors: { $addToSet: '$color' },
-            distinctModels: { $addToSet: '$carModel' },
+            distinctModels: { $addToSet: '$model' },
           },
         },
       ]);
@@ -300,19 +300,30 @@ module.exports = {
   
         
         const currentDate = new Date();
-        console.log(currentDate);     
+        const removeCar = await Car.find({
+          endDate: { $lt: currentDate }
+        })
+
+        if (removeCar.length > 0) {
+         
+          const result = await Car.updateMany(
+            { _id: { $in: removeCar.map(car => car._id) } }, // Filter by _id
+            { $set: { isCarRented: false, startDate: null, endDate: null } } // Update fields
+          );
+        
+          console.log(`${result.nModified} cars updated.`); // Print the number of updated cars
+        }
+        
    
       const cars = await Car.find({
-        is_subscribed: false,
-        approved: "Approved",
+        
+        status: "Approved",
         isCarRented: true,
-        approved: { $ne: "Blocked" },
-        startDate: { $lte: currentDate },
-        endDate: { $gte: currentDate },
+        endDate: { $gt: currentDate },
 
       });
 
-      console.log(cars.length);
+      console.log(cars,'jjd');
 
       if (cars && result) {
         return res.send({ status: true, cars: cars,result:result });
@@ -630,6 +641,41 @@ module.exports = {
   }
       
     } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  cancelBookingOngoing : async(req,res)=>{
+    try {
+      const {BookingId,reason,userId} = req.body
+      const booking = await Order.findOne({_id:BookingId})
+    
+      if(booking){
+
+
+        booking.status='Cancelled'
+        booking.cancelReason=reason
+        booking.cancelledby='user'
+        
+
+        
+         const refund= 3000
+
+
+        const user = await User.findOne({_id:userId})
+          user.wallet+=refund
+          user.save()
+         booking.paymentStatus='Refunded'
+         booking.refund.Amount=refund
+         booking.refund.method='Wallet'
+             
+        const BookingData = booking.save()
+        if(BookingData){
+
+        return res.send({ message: 'booking Cancelled', bookingCancel: true })
+      }
+    }}
+     catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");
     }

@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
     default:'paid'},
     pickupLocation:{type:String},
     dropOffLocation:{type:String},
-    deposit:{type:String},
+    deposit:{type:Number},
     totalAmount:{type:Number,required:true},
     refund:{
       Amount:{type:Number},

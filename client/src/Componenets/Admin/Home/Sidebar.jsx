@@ -41,12 +41,8 @@ const Sidebar = () => {
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
-          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin","/admin/dashboard"]) ? "bg-slate-500" : ""}`}>
-            <Link to="/admin" className="block">
-              Dashboard
-            </Link>
-          </li>
-          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/car",'/admin/car/cardetails']) ? "bg-slate-500" : ""}`}>
+        
+          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin","/admin/car",'/admin/car/cardetails']) ? "bg-slate-500" : ""}`}>
             <Link to="/admin/car" className="block">
               Cars
             </Link>
@@ -66,11 +62,12 @@ const Sidebar = () => {
               Bookings
             </Link>
           </li>
-          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/banner"]) ? "bg-slate-500" : ""}`}>
-            <Link to="/admin/banner" className="block">
-              Banners
+          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/payments"]) ? "bg-slate-500" : ""}`}>
+            <Link to="/admin/payments" className="block">
+              Payments
             </Link>
           </li>
+         
           {/* Add more links as needed */}
           <li className="p-4 hover:bg-slate-500">
             <Link onClick={handleLogout} className="block">

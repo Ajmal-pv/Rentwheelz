@@ -163,13 +163,13 @@ function CarDetails() {
           <div className="flex flex-col items-start space-y-1 text-l leading-8 ">
             <h1>
               <span className="font-bold">License Number:</span>{" "}
-              {car.licenseNumber}
+              {car.RegistrationNumber}
             </h1>
             <h1>
-              <span className="font-bold">Car Model:</span> {car.carModel}
+              <span className="font-bold">Car Model:</span> {car.model}
             </h1>
             <h1>
-              <span className="font-bold">City:</span> {car.city}
+              <span className="font-bold">City:</span> {car.pickUpArea}
             </h1>
             <h1>
               <span className="font-bold">Fuel Type:</span> {car.fuelType}
@@ -179,10 +179,10 @@ function CarDetails() {
               {car.kmDriven}
             </h1>
             <h1>
-              <span className="font-bold">Car Brand:</span> {car.carBrand}
+              <span className="font-bold">Car Brand:</span> {car.Brand}
             </h1>
             <h1>
-              <span className="font-bold">Car Variant:</span> {car.carVariant}
+              <span className="font-bold">Car Variant:</span> {car.Variant}
             </h1>
             <h1>
               <span className="font-bold">Year of Manufacture:</span>{" "}
@@ -302,28 +302,28 @@ function CarDetails() {
      
      
       </div>
-      { car.approved === "Pending" &&(
+      { car.status === "Pending" &&(
       <div className="p-4 flex justify-center ">
   <button  onClick={handleVerify} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
     Verify
   </button>
 </div>
 )}
-   { car.approved === "Approved" &&(
+   { car.status === "Approved" &&(
       <div className="p-4 flex justify-center ">
   <button onClick={carBlock}   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
     Block Car
   </button>
 </div>
 )}
- { car.approved === "Rejected" &&(
+ { car.status === "Rejected" &&(
       <div className="p-4 flex justify-center ">
   <h1   className="bg-red-500 hover:bg-red-700 text-white font-bold ">
     CAR REJECTED:{car.rejectReason}
   </h1>
 </div>
 )}
- { car.approved === "Blocked" &&(
+ { car.status === "Blocked" &&(
       <div className="p-4 flex justify-center ">
   <h1   className="bg-red-500 hover:bg-red-700 text-white font-bold ">
     CAR BLOCKED

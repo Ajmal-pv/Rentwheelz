@@ -179,15 +179,55 @@ const Profile = () => {
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file,'file');
-    setProfileImage(file)
+    
+  
+    // Define the allowed image types
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+      'image/tiff',
+      'image/svg+xml',
+      // Add more image types here as needed
+    ];
+  
+    const isImageValid = allowedTypes.includes(file.type);
+
+if(!isImageValid){
+  return toast.error('please check image file type')
+}else{
+   
+    setProfileImage(file)}
    
   };
 
   const handleLicenseImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file,'file');
-    setLicenseImage(file)
+
+   
+    
+  
+    // Define the allowed image types
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+      'image/tiff',
+      'image/svg+xml',
+      // Add more image types here as needed
+    ];
+  
+    const isImageValid = allowedTypes.includes(file.type);
+
+    if(!isImageValid){
+      return toast.error('please check image type')
+    }else{
+    
+    setLicenseImage(file)}
   };
 
   const openProfileImageInput = () => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { bookings } from '../../../services/admin-Service'
+import moment from 'moment'
 
 
 function Bookings() {
@@ -79,10 +80,11 @@ function Bookings() {
         <th className="py-4 px-6 border-b border-gray-300 text-left">user</th>
         
         
-        <th className="py-4 px-6 border-b border-gray-300 text-left">startDate</th>
-        <th className="py-4 px-6 border-b border-gray-300 text-left">endDate</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">StartDate</th>
+        <th className="py-4 px-6 border-b border-gray-300 text-left">EndDate</th>
         
         <th className="py-4 px-6 border-b border-gray-300 text-left">status</th>
+        
        
 
 
@@ -93,7 +95,7 @@ function Bookings() {
     <tbody >
   {bookings1.length === 0 ? (
     <tr>
-      <td colSpan="5" className="py-4 px-4 text-center">
+      <td colSpan="5" className="py-4 px-4 text-center text-red-700">
         No bookings
       </td>
     </tr>
@@ -105,8 +107,13 @@ function Bookings() {
         </td>
         <td className="py-4 px-8 border-b border-gray-300">{booking.user.name}</td>
 
-        <td className="py-10 px-10 border-b border-gray-300">{booking.startDate}</td>
-        <td className="py-4 px-6 border-b border-gray-300">{booking.endDate}</td>
+        <td className="py-10 px-10 border-b border-gray-300">{moment
+                          .utc(booking.startDate)
+                          .format("MMMM D, YYYY, h:mm A")}</td>
+        
+        <td className="py-4 px-6 border-b border-gray-300">{moment
+                          .utc(booking.endDate)
+                          .format("MMMM D, YYYY, h:mm A")}</td>
         <td
           className={`py-4 px-6 border-b border-gray-300 ${
             booking.status === 'upcoming'

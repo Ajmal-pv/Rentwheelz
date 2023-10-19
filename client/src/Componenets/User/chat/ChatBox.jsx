@@ -103,14 +103,17 @@ const handleMessage= async (e)=>{
            
             <div className="relative w-full p-6 overflow-y-auto h-[30rem] bg-slate-200">
             {messages.map((message)=>(
-              <ul key={message._id} ref={scroll} className="space-y-2 mb-4">
+           <div  key={message._id} ref={scroll}>
+              <ul className="space-y-2 mb-4">
+                
                 <li className={message.senderId === currentUser ? "flex justify-end" : "flex justify-start" }>
                   <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
                     <span className="block text-xl">{message.text}</span>
-                    <span  >{format(message.createdAt)}</span>
+                    <span className='text-xs' >{format(message.createdAt)}</span>
                   </div>
                 </li>
               </ul>
+              </div>
               ))}
             </div>
 

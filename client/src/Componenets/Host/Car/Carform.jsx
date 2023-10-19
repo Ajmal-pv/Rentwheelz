@@ -386,7 +386,7 @@ function NewCarForm({ isOpen, onClose }) {
                      <option >Select</option>
                     <option defaultValue="Maruti">Maruti</option>
                     <option defaultValue="BMW">BMW</option>
-                    <option defaultValue="BENZ">BENZ</option>
+                    <option defaultValue="BENZ">Mercedes-Benz</option>
                     <option defaultValue="HYUNDAI">HYUNDAI</option>
                     <option defaultValue="Toyota">Toyota</option>
                     <option defaultValue="MG">MG</option>

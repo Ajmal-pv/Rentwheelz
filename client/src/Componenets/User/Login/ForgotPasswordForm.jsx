@@ -25,6 +25,7 @@ const ForgotPasswordForm = () => {
       .then((res) => {
         if (res.data.status) {
           const user_id = res.data.user;
+          
        
           navigate(`/forgot-otp?idu=${user_id}`);
         }

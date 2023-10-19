@@ -133,7 +133,7 @@ function Car() {
         return (
           (selectedBrandOptions.length === 0 || selectedBrandOptions.includes(car.Brand)) &&
           (selectedColorOptions.length === 0 || selectedColorOptions.includes(car.color)) &&
-          (selectedModelOptions.length === 0 || selectedModelOptions.includes(car.carModel))
+          (selectedModelOptions.length === 0 || selectedModelOptions.includes(car.model))
         );
       });
       if(location && startDate && endDate){
@@ -179,7 +179,20 @@ function Car() {
     
 
    
-   
+    function getCurrentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    
+    
+    
+    
+    
+    
+    
   
   
    
@@ -315,6 +328,7 @@ function Car() {
               type="date"
               id="start-date"
               placeholder="YYYY-MM-DD"
+              min={getCurrentDate()} 
             />
           </div>
         </div>
@@ -330,6 +344,7 @@ function Car() {
               type="date"
               id="end-date"
               placeholder="YYYY-MM-DD"
+              min={getCurrentDate()} 
             />
           </div>
         </div>
@@ -353,7 +368,8 @@ function Car() {
       </div>
     </div>
     <div className="flex flex-wrap w-full ">
-      {cars1?.map((car) => (
+      {cars1.length >0 ? (
+      cars1?.map((car) => (
         <Link to={`cardetails?id=${car._id}`}>
       <div key={car._id}  className="relative m-6 h-[60vh] flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
         <div className="relative w-full   flex h-60 overflow-hidden rounded-md" >
@@ -362,7 +378,7 @@ function Car() {
           </div>
         <div className="mt-2 px-5 pb-5 ">
           <a href="#">
-            <h5 className="text-xl tracking-tight text-slate-900">{car.carBrand} {car.carModel}</h5>
+            <h5 className="text-xl tracking-tight text-slate-900">{car.Brand} {car.model}</h5>
           </a>
           <div className=" mb-5 flex items-center justify-between">
             <div className='flex items-center'>
@@ -374,7 +390,7 @@ function Car() {
               
             </div>
             <div className="mt-2 px-4 ">
-            <p className="text-sm text-gray-500 mt-2">Location:{car.city} </p>
+            <p className="text-sm text-gray-500 mt-2">Location:{car.pickUpArea} </p>
             <p className="text-sm text-gray-500 mt-2">Fuel:{car.fuelType} </p>
         <p className="text-sm text-gray-500 mt-2">Year:{car.yearOfManufacture} </p>
         <p className="text-sm text-gray-500 mt-2">km driven:{car.kmDriven} km </p>
@@ -393,7 +409,11 @@ function Car() {
         </div>
       </div>
       </Link>
-        ))}
+        ))
+  ): (
+    <p>No cars available.</p>
+  )
+      }
         
       </div>
 

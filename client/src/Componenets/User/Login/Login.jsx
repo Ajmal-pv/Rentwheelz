@@ -54,9 +54,10 @@ function Login() {
           if (error.response.status === 500) {
             // Internal Server Error occurred
             navigate('/serverError')
-          } else {
+          } else if(error.response.status === 400) {
             // Handle other non-500 errors here, if needed
             toast.error(error.response.data.message);
+            navigate('/login')
           }
         } else {
           // The request was made but no response was received

@@ -28,6 +28,8 @@ user_route.post('/ordercreation',userAuth,userController.orderCreation)
 user_route.post('/edit-profile',userAuth,userController.editProfile)
 user_route.get('/userBooking',userAuth,userController.userBookings)
 user_route.post('/cancelbooking',userAuth,userController.cancelBooking)
+user_route.post('/cancelbookingOngoing',userAuth,userController.cancelBookingOngoing)
+
 user_route.get('/getwallet',userAuth,userController.getwallet)
 
 

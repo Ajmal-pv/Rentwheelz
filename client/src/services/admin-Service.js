@@ -36,3 +36,6 @@ export const carApproval=(carId,rentalPrice)=>{
 export const carReject=(carId,rejectReason)=>{
   return api.post('/carReject',{carId,rejectReason},{ withCredentials: true })
 }
+export const orderFind =()=>{
+  return api.get(`/orderedcars`)
+}

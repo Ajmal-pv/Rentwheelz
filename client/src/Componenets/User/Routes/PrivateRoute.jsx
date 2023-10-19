@@ -36,6 +36,9 @@ function PrivateRoute() {
         }else if(error.response && error.response.status===401){
           const errorstatus='401'
           navigate(`/error?error=${errorstatus}`)
+        }else if(error.response && error.response.status===400){
+          alert('user is blocked')
+          navigate('/login')
         }
          {
           // Handle other errors here

@@ -15,6 +15,7 @@ import PrivateRoute from "../Componenets/Host/Routes/PrivateRoute";
 import HostCarform2 from "../Pages/Host/HostCarform2";
 import HostBooking from "../Pages/Host/HostBooking";
 import NotFound from "../Pages/error/NotFound";
+import HostPayment from "../Pages/Host/HostPayment";
 
 function Host() {
   return (
@@ -35,7 +36,8 @@ function Host() {
           <Route path="/carForm" element={<HostCarform />} />
           <Route path="/carForm" element={<HostCarform />} />
           <Route path="/bookings" element={<HostBooking />} />
-
+          <Route path="/payments" element={<HostPayment />} />
+        
      </Route>
      <Route
         path="*"

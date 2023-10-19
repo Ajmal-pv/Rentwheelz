@@ -143,7 +143,7 @@ const CarDetails = () => {
    
     if(userToken){
      
-      navigate(`/cars/carpayment?pd=${startDate}&dd=${endDate}&id=${carId}&userid=${userId}&hostId=${car.hostId}&pickup=${car.city}&drop=${dropOff}`)
+      navigate(`/cars/carpayment?pd=${startDate}&dd=${endDate}&id=${carId}&userid=${userId}&hostId=${car.hostId}&pickup=${car.pickUpArea}&drop=${dropOff}`)
 
     }else{
       navigate('/login')
@@ -165,7 +165,7 @@ const CarDetails = () => {
             userId: userId,
             hostId: car.hostId,
             dropOff:dropOff,
-            pickup:car.city
+            pickup:car.pickUpArea
           };
           const orderDataJSON = JSON.stringify(orderData);
 
@@ -204,7 +204,7 @@ const CarDetails = () => {
 
             <div className="w-full md:w-1/2 pl-10">
               <h1 className="text-3xl font-semibold">
-                {car.carBrand} {car.carModel}
+                {car.Brand} {car.model}
               </h1>
               <p className="text-black mb-2 mt-2">{car.discription}</p>
 
@@ -227,7 +227,7 @@ const CarDetails = () => {
               <div className="flex items-center mb-2">
                 <span className="text-gray-600 text-sm mr-2 capitalize">Car Variant:</span>
                 <span className="text-black font-semibold capitalize">
-                  {car.carVariant}
+                  {car.Variant}
                 </span>
               </div>
               <div className="flex items-center mb-4">
@@ -251,12 +251,14 @@ const CarDetails = () => {
                   Available till:
                 </span>
                 <span className="text-red-700 font-semibold">
-                  {car.rentalEndDate}
+                {moment
+                 .utc(car.endDate)
+                 .format("MMMM D, YYYY")} 
                 </span>
               </div>
               <div className="flex items-center mb-2">
                 <span className="text-red-600 text-l mr-2 capitalize">Pick up Location:</span>
-                <span className="text-black font-semibold capitalize">{car.city}</span>
+                <span className="text-black font-semibold capitalize">{car.pickUpArea}</span>
               </div>
               <div className="flex items-center mb-4">
                 <span className="text-red-600 text-l mr-2 ">

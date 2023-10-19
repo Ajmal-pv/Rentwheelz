@@ -133,11 +133,11 @@ function Car() {
 
             
             </td>
-            <td className="py-2 px-4 border-b border-gray-300">{car.carBrand}</td>
-            <td className="py-2 px-4 border-b border-gray-300">{car.carModel}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.Brand}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.model}</td>
            
-            <td className="py-2 px-4 border-b border-gray-300">{car.licenseNumber}</td>
-            <td className={`py-2 px-4 border-b border-gray-300 ${car.approved === 'Approved' ? 'text-green-600' : car.approved === 'Rejected' ? 'text-red-600' : car.approved === 'Blocked' ? 'text-red-600' : 'text-yellow-600'}`}>{car.approved}</td>
+            <td className="py-2 px-4 border-b border-gray-300">{car.RegistrationNumber}</td>
+            <td className={`py-2 px-4 border-b border-gray-300 ${car.status === 'Approved' ? 'text-green-600' : car.status === 'Rejected' ? 'text-red-600' : car.status === 'Blocked' ? 'text-red-600' : 'text-yellow-600'}`}>{car.status}</td>
             
             <td className="py-2 px-4 border-b border-gray-300">
               {/* <Link to={`/cardetails?id=${car._id}`} className="text-blue-500 font-bold" >
