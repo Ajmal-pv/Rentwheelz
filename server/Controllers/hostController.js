@@ -202,14 +202,11 @@ module.exports = {
   hostSignin: async (req, res) => {
     try {
       const HostLOGIN = {
-       
-        
         token: null,
         name: null,
         id: null,
-        host: null,
-       
-      };
+        host: null 
+      }
       const { email, password } = req.body;
       const host = await Host.findOne({ email });
 
@@ -237,14 +234,14 @@ module.exports = {
         HostLOGIN.host = host;
 
 
-        res.status(200).send({ HostLOGIN });
+      return  res.status(200).json({ HostLOGIN });
       } else {
        
-        res.status(401).send('password is wrong ');
+      return  res.status(401).send('password is wrong ');
       }
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send("Server Error");
+    
+     return res.status(500).send("Server Error");
     }
   },
   // Function to handle user details retrieval based on the provided JWT
@@ -282,7 +279,7 @@ module.exports = {
     try {
       const carId = req.query.id;
       const carInfo = await Car.findOne({ _id: carId });
-      console.log(carInfo);
+     
       if (carInfo) {
         res.send({ carData: carInfo, car: true });
       } else {
