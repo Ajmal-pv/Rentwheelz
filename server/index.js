@@ -56,18 +56,18 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send('Internal server error');
 });
-// io.on('connection', (socket) => {
-//   console.log('A user connected');
+io.on('connection', (socket) => {
+  console.log('A user connected');
 
-//   socket.on('message', (message) => {
-//     io.emit('receive-message', message);
-//     console.log('message recieved');
-//   });
+  socket.on('message', (message) => {
+    io.emit('receive-message', message);
+    console.log('message recieved');
+  });
 
-//   socket.on('disconnect', () => {
-//     console.log('A user disconnected');
-//   });
-// });
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
 
 server.listen(port, () => {
   console.log('Server is running on port 5000');
