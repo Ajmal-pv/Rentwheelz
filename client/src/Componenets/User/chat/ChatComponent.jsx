@@ -3,8 +3,8 @@ import { userChats } from '../../../services/user-Service';
 import Conversation from './Conversation';
 import ChatBox from './ChatBox'
 import io from 'socket.io-client';
-
-const socket = io('http://localhost:5000')
+const url = import.meta.env.VITE_baseUrl
+const socket = io(url)
 
 function ChatComponent() {
   
