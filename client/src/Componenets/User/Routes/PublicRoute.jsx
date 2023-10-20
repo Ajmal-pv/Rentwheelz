@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { userAxiosInstance as api } from "../../../axios/Axios";
 import { userLogin, userLogout } from "../../../store/userSlice";
 
 
 function PublicRoute() {
     const dispatch = useDispatch();
+    const navigate= useNavigate()
     const token = localStorage.getItem("userToken");
     useEffect(() => {
       if (token) {
@@ -22,6 +23,7 @@ function PublicRoute() {
             }
           })
           .catch((error) => {
+            alert('error')
             if (error.response) {
               // The request was made and the server responded with an error status code
               if (error.response.status === 500) {
@@ -32,8 +34,7 @@ function PublicRoute() {
                 toast.error(error.response.data.message);
               }
             } else {
-              // The request was made but no response was received
-              toast.error('Network Error. Please check your internet connection.');
+              navigate('/serverError')
             }
           });
       } else {

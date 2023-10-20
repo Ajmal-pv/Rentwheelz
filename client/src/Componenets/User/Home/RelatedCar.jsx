@@ -33,6 +33,7 @@ const [heading,setHeading]=useState('')
                     
                 }
             }).catch((error)=>{
+              alert('error')
               if (error.response) {
                 // The request was made and the server responded with an error status code
                 if (error.response.status === 500) {
@@ -66,7 +67,8 @@ const [heading,setHeading]=useState('')
                   toast.error(error.response.data.message);
                 }
                 else {
-                navigate('/serverError')
+                  alert('error')
+              console.log(error);
               }
             })
         } 

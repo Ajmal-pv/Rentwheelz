@@ -350,6 +350,7 @@ module.exports = {
     }
   },
   specialCar: async (req, res) => {
+    console.log('succes');
     try {
       const type = req.query.type;
       const carId = req.query.car;
@@ -358,9 +359,11 @@ module.exports = {
         const newCars = await Car.find({ isCarRented: true })
           .sort({ createdAt: -1 })
           .limit(8);
+          console.log(newCars,'heree');
         if (newCars) {
           res.json(newCars);
         } else {
+            console.log('at else');  
           res.status(404).json({ message: "Car not found" });
         }
       }
@@ -380,6 +383,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log('at error');
       console.log(error.message);
       res.status(500).send("Server Error");
     }
