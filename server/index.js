@@ -38,12 +38,6 @@ app.use(express.static(path.join(__dirname,'public')))
 const server = http.createServer(app);
 
 
-const io = new Server(server,{
-  cors:{
-    origin:frontend
-  }
-})
-
 app.use('/', userRoute);
 app.use('/admin',adminRoute)
 app.use('/host',hostRoute)
@@ -56,6 +50,18 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send('Internal server error');
 });
+
+server.listen(port, () => {
+  console.log('Server is running on port 5000');
+})
+
+
+const io = new Server(server,{
+  cors:{
+    origin:frontend
+  }
+})
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -69,9 +75,7 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log('Server is running on port 5000');
-})
+
 
 
 // let activeUsers=[]
