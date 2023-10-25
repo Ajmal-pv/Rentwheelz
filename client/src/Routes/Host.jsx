@@ -16,6 +16,7 @@ import HostCarform2 from "../Pages/Host/HostCarform2";
 import HostBooking from "../Pages/Host/HostBooking";
 import NotFound from "../Pages/error/NotFound";
 import HostPayment from "../Pages/Host/HostPayment";
+import HostChat from "../Pages/Host/HostChat";
 
 function Host() {
   return (
@@ -37,6 +38,8 @@ function Host() {
           <Route path="/carForm" element={<HostCarform />} />
           <Route path="/bookings" element={<HostBooking />} />
           <Route path="/payments" element={<HostPayment />} />
+          <Route path="/messages" element={<HostChat />} />
+         
         
      </Route>
      <Route

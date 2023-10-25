@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { cancelBooking, cancelBookingOngoing, getUserBooking } from "../../../services/user-Service";
+import { cancelBooking, cancelBookingOngoing, getUserBooking, hostMessage } from "../../../services/user-Service";
 import { Toaster, toast } from "react-hot-toast";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MessageOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import Swal from "sweetalert2";
 
 function BookingPage() {
+  const navigate=useNavigate()
   const [filter, setFilter] = useState("all");
   const [bookings, setBookings] = useState([]);
   const [isReasonVisible, setIsReasonVisible] = useState(false);
@@ -144,6 +145,19 @@ function BookingPage() {
     filter === "all"
       ? bookings
       : bookings.filter((booking) => booking.status === filter);
+
+
+  const sendMessage = async(bookingId)=>{
+    try {
+      const {data}= await hostMessage(bookingId)
+   if(data.status===true){
+    navigate('/chat')
+   }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }    
 
   return (
     <div className="bg-gray-100 min-h-screen  p-4">
@@ -338,7 +352,9 @@ function BookingPage() {
                           }
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                        <MessageOutlined />{" "}
+                        <MessageOutlined onClick={()=>{
+                          sendMessage(booking._id)
+                        }} />{" "}
                         
                       </td>
                     </tr>

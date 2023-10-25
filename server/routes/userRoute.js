@@ -1,9 +1,8 @@
 const express = require('express');
 const user_route = express();
 const userController = require('../Controllers/userController')
-
-
-const {userAuth} = require('../middleware/jwtTokenDecode')
+const {userAuth} = require('../middleware/jwtTokenDecode');
+const { getChats } = require('../Controllers/chatController');
 
 user_route.post('/signup',userController.userCreation)
 user_route.post('/verifyUser',userController.userVerify)
@@ -19,6 +18,10 @@ user_route.post('/otp-checking',userController.forgotOtp)
 user_route.post('/password-set',userController.passwordSet)
 user_route.get('/specialCars',userController.specialCar)
 user_route.get('/getuser',userController.getUser)
+user_route.get('/gethost',userController.getHost)
+
+
+
 
 user_route.get('/datesSelected',userController.getDates)
 user_route.post('/create-checkout-session',userAuth,userController.stripePayment)
@@ -31,6 +34,7 @@ user_route.post('/cancelbooking',userAuth,userController.cancelBooking)
 user_route.post('/cancelbookingOngoing',userAuth,userController.cancelBookingOngoing)
 
 user_route.get('/getwallet',userAuth,userController.getwallet)
+user_route.get('/sendmessage',userAuth,userController.sendMessage)
 
 
 module.exports = user_route;

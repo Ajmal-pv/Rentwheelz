@@ -47,6 +47,15 @@ export const getCar=(carType,carPage)=>{
 export const getUser=(userId)=>{
   return api.get(`/getuser?id=${userId}`)
 }
+export const gethost=(hostId)=>{
+  return api.get(`/gethost?id=${hostId}`)
+}
+
+export const getUsers=(userId)=>{
+  return api.get(`/getusers?id=${userId}`)
+}
+
+
 export const orderCreation=(orderData)=>{
   
   return api.post('/ordercreation', {orderData} , { withCredentials: true });
@@ -87,4 +96,8 @@ export const cancelBookingOngoing=(BookingId,reason,userId)=>{
 export const  getWallet=(userId)=>{
   return api.get(`/getwallet?id=${userId}`)
 }
+export const hostMessage=(bookingId)=>{
+  return api.get(`/sendmessage?id=${bookingId}`)
+}
 
+ 

@@ -201,7 +201,7 @@ module.exports = {
   },
   hostSignin: async (req, res) => {
     try {
-      const HostLOGIN = {
+      const  HostLOGIN = {
         token: null,
         name: null,
         id: null,
@@ -315,8 +315,7 @@ module.exports = {
       const hostId = req.query.id;
       const hostCars = await Order.find({ host: hostId })
         .populate("car")
-        .populate("user").sort({_id:-1});
-        console.log(hostCars,'hello');
+        .populate("user").sort({_id:-1})
       if (hostCars) {
         res.send({ Bookings: hostCars, status: true });
       }else{

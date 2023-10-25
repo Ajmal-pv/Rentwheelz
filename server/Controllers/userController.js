@@ -8,10 +8,11 @@ const nodemailer = require("nodemailer");
 const Car = require("../models/car");
 const Host = require("../models/host");
 const { request } = require("../routes/userRoute");
+const Message = require("../models/message");
+const Chat = require("../models/chat");
 const stripe = require("stripe")(
   "sk_test_51Nnk6YSI7Ai5l2UPPFzlDNnsIbJJyKd0RuObWiZZp8Vfi5sXlIb65AM1gmRWklInGHmZZ0xuBcvlWd1l3CefdnoF00zHfAe6BD"
 );
-
 
 const otpStorage = {};
 const SMTP_USER = process.env.SMTP_USER;
@@ -117,7 +118,7 @@ module.exports = {
       const userLOGIN = {
         status: false,
         message: null,
-        wallet:null,
+        wallet: null,
         name: null,
         id: null,
         email: null,
@@ -163,7 +164,7 @@ module.exports = {
         userLOGIN.email = user.email;
         userLOGIN.mobile = user.mobile;
         userLOGIN.token = token;
-        userLOGIN.wallet =user.wallet
+        userLOGIN.wallet = user.wallet;
 
         res.status(200).send({ userLOGIN });
       } else {
@@ -201,7 +202,7 @@ module.exports = {
       if (!userFind) {
         return res.status(404).json({ message: "No account with this email" });
       }
-    
+
       const otp = generateOTP(4);
       otpStorage[email] = otp;
       const transporter = nodemailer.createTransport({
@@ -250,7 +251,6 @@ module.exports = {
       } else {
         return res.json({ message: "wrong otp" });
       }
-
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");
@@ -285,48 +285,41 @@ module.exports = {
         {
           $group: {
             _id: null,
-            distinctBrands: { $addToSet: '$Brand' },
-            distinctColors: { $addToSet: '$color' },
-            distinctModels: { $addToSet: '$model' },
+            distinctBrands: { $addToSet: "$Brand" },
+            distinctColors: { $addToSet: "$color" },
+            distinctModels: { $addToSet: "$model" },
           },
         },
       ]);
 
-        const result = {
-          distinctBrands: distinctData[0].distinctBrands,
-          distinctColors: distinctData[0].distinctColors,
-          distinctModels: distinctData[0].distinctModels,
-        }
-  
-        
-        const currentDate = new Date();
-        const removeCar = await Car.find({
-          endDate: { $lt: currentDate }
-        })
+      const result = {
+        distinctBrands: distinctData[0].distinctBrands,
+        distinctColors: distinctData[0].distinctColors,
+        distinctModels: distinctData[0].distinctModels,
+      };
 
-        if (removeCar.length > 0) {
-         
-          const result = await Car.updateMany(
-            { _id: { $in: removeCar.map(car => car._id) } }, // Filter by _id
-            { $set: { isCarRented: false, startDate: null, endDate: null } } // Update fields
-          );
-        
-          console.log(`${result.nModified} cars updated.`); // Print the number of updated cars
-        }
-        
-   
+      const currentDate = new Date();
+      const removeCar = await Car.find({
+        endDate: { $lt: currentDate },
+      });
+
+      if (removeCar.length > 0) {
+        const result = await Car.updateMany(
+          { _id: { $in: removeCar.map((car) => car._id) } }, // Filter by _id
+          { $set: { isCarRented: false, startDate: null, endDate: null } } // Update fields
+        );
+
+        console.log(`${result.nModified} cars updated.`); // Print the number of updated cars
+      }
+
       const cars = await Car.find({
-        
         status: "Approved",
         isCarRented: true,
         endDate: { $gt: currentDate },
-
       });
 
-      console.log(cars,'jjd');
-
       if (cars && result) {
-        return res.send({ status: true, cars: cars,result:result });
+        return res.send({ status: true, cars: cars, result: result });
       } else {
         res.status(404).json({ message: "Cars not found" });
       }
@@ -350,7 +343,7 @@ module.exports = {
     }
   },
   specialCar: async (req, res) => {
-    console.log('succes');
+    console.log("succes");
     try {
       const type = req.query.type;
       const carId = req.query.car;
@@ -359,11 +352,11 @@ module.exports = {
         const newCars = await Car.find({ isCarRented: true })
           .sort({ createdAt: -1 })
           .limit(8);
-          console.log(newCars,'heree');
+        console.log(newCars, "heree");
         if (newCars) {
           res.json(newCars);
         } else {
-            console.log('at else');  
+          console.log("at else");
           res.status(404).json({ message: "Car not found" });
         }
       }
@@ -383,15 +376,15 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log('at error');
+      console.log("at error");
       console.log(error.message);
       res.status(500).send("Server Error");
     }
   },
   stripePayment: async (req, res) => {
     try {
-      const { product, price,carId } = req.body;
-     
+      const { product, price, carId } = req.body;
+
       const cancelUrl = `http://localhost:5173/cancel?id=${carId}`;
 
       const session = await stripe.checkout.sessions.create({
@@ -432,14 +425,36 @@ module.exports = {
       res.status(500).send("Server Error");
     }
   },
+  getHost: async (req, res) => {
+    try {
+      console.log('here');
+      const userId = req.query.id;
+      const user = await Host.findOne({ _id: userId });
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
   orderCreation: async (req, res) => {
     try {
-      const { startDate, endDate, carId, userId, hostId,dropOff,pickup,TotalAmount,method } = req.body.orderData;
+      const {
+        startDate,
+        endDate,
+        carId,
+        userId,
+        hostId,
+        dropOff,
+        pickup,
+        TotalAmount,
+        method,
+      } = req.body.orderData;
 
-    
       const car = await Car.findOne({ _id: carId });
-      
-
 
       const order = new Order({
         startDate: startDate,
@@ -447,40 +462,39 @@ module.exports = {
         car: carId,
         user: userId,
         host: hostId,
-        pickupLocation:pickup,
-        dropOffLocation:dropOff,
-        deposit:3000,
-        totalAmount:TotalAmount,
-        paymentMethod:method
+        pickupLocation: pickup,
+        dropOffLocation: dropOff,
+        deposit: 3000,
+        totalAmount: TotalAmount,
+        paymentMethod: method,
       });
-
-
 
       const orderSave = await order.save();
 
-      if(method === 'Wallet'){
-        const userUpdate = await User.findOne({_id:userId})
-        userUpdate.wallet -= TotalAmount
-        userUpdate.save()
-       
+      if (method === "Wallet") {
+        const userUpdate = await User.findOne({ _id: userId });
+        userUpdate.wallet -= TotalAmount;
+        userUpdate.save();
       }
 
       if (orderSave) {
-        
-        const orders = await Order.find({ car: carId }, { startDate: 1, endDate: 1, _id: 0 });
+        const orders = await Order.find(
+          { car: carId },
+          { startDate: 1, endDate: 1, _id: 0 }
+        );
 
         const carDates = orders.map((order) => ({
           startDate: order.startDate,
           endDate: order.endDate,
         }));
-      
+
         const carTimeframe = [
           {
             startDate: car.startDate,
             endDate: car.endDate,
           },
         ];
-      
+
         // Check if there are gaps between the car's timeframe and the booked orders
         const carIsCompletelyBooked = carTimeframe.every((timeframe) => {
           return carDates.some((orderDate) => {
@@ -490,17 +504,15 @@ module.exports = {
             );
           });
         });
-      
+
         // If the car is completely booked, update the slotBooked field
         if (carIsCompletelyBooked) {
           await Car.updateOne({ _id: carId }, { slotCompleted: true });
         }
-        res
-          .status(200)
-          .json({
-            message: "Order created successfully",
-            orderId: orderSave._id,
-          });
+        res.status(200).json({
+          message: "Order created successfully",
+          orderId: orderSave._id,
+        });
       } else {
         // Handle the case where orderSave is falsy (e.g., if the save operation fails)
         res.status(500).json({ message: "Failed to create order" });
@@ -584,7 +596,7 @@ module.exports = {
         .populate("car")
         .populate("user")
         .populate("host")
-        .sort({_id:-1})
+        .sort({ _id: -1 });
       if (!userBooking) {
         return res
           .status(404)
@@ -596,92 +608,151 @@ module.exports = {
       return res.status(500).json({ message: "Internal server error" });
     }
   },
-  cancelBooking: async(req,res) =>{
+  cancelBooking: async (req, res) => {
     try {
-      const {BookingId,reason,userId} = req.body
-      const booking = await Order.findOne({_id:BookingId})
-    
-      if(booking){
+      const { BookingId, reason, userId } = req.body;
+      const booking = await Order.findOne({ _id: BookingId });
 
+      if (booking) {
+        booking.status = "Cancelled";
+        booking.cancelReason = reason;
+        booking.cancelledby = "user";
 
-        booking.status='Cancelled'
-        booking.cancelReason=reason
-        booking.cancelledby='user'
-        
+        const totalAmount = booking.totalAmount;
+        const refund = totalAmount - 100;
 
-        const totalAmount= booking.totalAmount
-         const refund= totalAmount-100
+        const user = await User.findOne({ _id: userId });
+        user.wallet += refund;
+        user.save();
+        booking.paymentStatus = "Refunded";
+        booking.refund.Amount = refund;
+        booking.refund.method = "Wallet";
 
-
-        const user = await User.findOne({_id:userId})
-          user.wallet+=refund
-          user.save()
-         booking.paymentStatus='Refunded'
-         booking.refund.Amount=refund
-         booking.refund.method='Wallet'
-             
-        const BookingData = booking.save()
-        if(BookingData){
-
-        return res.send({ message: 'booking Cancelled', bookingCancel: true })
+        const BookingData = booking.save();
+        if (BookingData) {
+          return res.send({
+            message: "booking Cancelled",
+            bookingCancel: true,
+          });
+        }
       }
-      }
-
-
-
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");
     }
   },
-  getwallet: async (req,res)=>{
+  getwallet: async (req, res) => {
     try {
-      const userId= req.query.id;
-   const user = await User.findOne({_id:userId})
-      
-  if(user){
-    const wallet= user.wallet
-    return res.status(200).json(wallet)
-  }
-      
+      const userId = req.query.id;
+      const user = await User.findOne({ _id: userId });
+
+      if (user) {
+        const wallet = user.wallet;
+        return res.status(200).json(wallet);
+      }
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");
     }
   },
-  cancelBookingOngoing : async(req,res)=>{
+  cancelBookingOngoing: async (req, res) => {
     try {
-      const {BookingId,reason,userId} = req.body
-      const booking = await Order.findOne({_id:BookingId})
-    
-      if(booking){
+      const { BookingId, reason, userId } = req.body;
+      const booking = await Order.findOne({ _id: BookingId });
 
+      if (booking) {
+        booking.status = "Cancelled";
+        booking.cancelReason = reason;
+        booking.cancelledby = "user";
 
-        booking.status='Cancelled'
-        booking.cancelReason=reason
-        booking.cancelledby='user'
-        
+        const refund = 3000;
 
-        
-         const refund= 3000
+        const user = await User.findOne({ _id: userId });
+        user.wallet += refund;
+        user.save();
+        booking.paymentStatus = "Refunded";
+        booking.refund.Amount = refund;
+        booking.refund.method = "Wallet";
 
-
-        const user = await User.findOne({_id:userId})
-          user.wallet+=refund
-          user.save()
-         booking.paymentStatus='Refunded'
-         booking.refund.Amount=refund
-         booking.refund.method='Wallet'
-             
-        const BookingData = booking.save()
-        if(BookingData){
-
-        return res.send({ message: 'booking Cancelled', bookingCancel: true })
+        const BookingData = booking.save();
+        if (BookingData) {
+          return res.send({
+            message: "booking Cancelled",
+            bookingCancel: true,
+          });
+        }
       }
-    }}
-     catch (error) {
+    } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");
     }
-  }
+  },
+  sendMessage: async (req, res) => {
+    try {
+      const BookingId = req.query.id;
+     
+      const booking = await Order.findOne({ _id: BookingId })
+        .populate("user")
+        .populate("host")
+        .populate("car");
+
+      const hostId= booking.host._id.toString();
+      const userId = booking.user._id.toString()
+       
+      const existingChat = await Chat.findOne({
+        members: { $all: [hostId,userId] },
+      });
+      
+      const senderId = booking.user._id.toString();
+      const text = `Hello, I am here for enquiring about ${booking.car.RegistrationNumber} car`;
+
+      if (!existingChat) {
+
+      
+        const newChat = new Chat({
+          members: [userId,hostId],
+        });
+
+        const result = await newChat.save();
+        console.log(result,'newchat');
+        if (result) {
+          const chatId = result._id;
+          const message = new Message({
+            chatId,
+            senderId,
+            text,
+          });
+          const created = await message.save();
+          if(created){
+            return  res.status(200).json({status:true})
+          }else{
+            console.log('error');
+          }
+        
+
+        } else {
+          return res.status(500).send("Server Error");
+        }
+      } else {
+        const chatId = existingChat._id.toString()
+       
+        const message = new Message({
+          chatId,
+          senderId,
+          text,
+        });
+        const result = await message.save();
+        console.log(result,'message');
+        if (result) {
+         return res.status(200).json({status:true})
+
+        } else {
+          return res.status(500).send("Server Error");
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
 };

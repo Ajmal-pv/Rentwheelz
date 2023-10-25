@@ -58,7 +58,7 @@ function Sidebar() {
             </Link>
           </li>
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/messages"]) ? "bg-slate-500" : ""}`}>
-            <Link to="" className="block text-l">
+            <Link to="/host/messages" className="block text-l">
               Messages
             </Link>
           </li>

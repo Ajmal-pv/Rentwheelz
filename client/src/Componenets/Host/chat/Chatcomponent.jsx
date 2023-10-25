@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { userChats } from '../../../services/user-Service';
-import Conversation from './Conversation';
-import ChatBox from './ChatBox'
+
+
 import io from 'socket.io-client';
+import Conversation from '../../User/chat/Conversation';
+import ChatBox from '../../User/chat/ChatBox';
 const url = import.meta.env.VITE_baseUrl
 const socket = io(url)
 
-function ChatComponent() {
-  
-    const user=localStorage.getItem('userToken')
-    const userId=localStorage.getItem('userId')
+function Chatcomponent() {
+
+    const host=localStorage.getItem('hostToken')
+    const hostId=localStorage.getItem('hostId')
     const [chats,setChats]=useState([]) 
     const [currentChat,setCurrentChat]=useState(null)
     const[onlineUsers,setOnlineUsers]=useState([])
@@ -22,7 +24,7 @@ function ChatComponent() {
     useEffect(()=>{
         const getChats= async()=>{
             try {
-                const {data}=await userChats(userId)
+                const {data}=await userChats(hostId)
                
                 setChats(data)
                 
@@ -31,12 +33,12 @@ function ChatComponent() {
             }
         }
         getChats()
-    },[user])
+    },[host])
    
     // Define an effect to set up the event listener when the component mounts
   useEffect(() => {
     // Emit a "new-user-add" event to notify the server about the new user
-    socket.emit("new-user-add", userId);
+    socket.emit("new-user-add", hostId);
 
     // Listen for incoming messages
     socket.on("receive-message", (data) => {
@@ -48,7 +50,7 @@ function ChatComponent() {
     return () => {
       socket.off("receive-message");
     };
-  }, [userId]); // Only set up the listener when `userId` changes
+  }, [hostId]); // Only set up the listener when `userId` changes
 
     useEffect(() => {
       socket.on("connect", () => {
@@ -65,20 +67,7 @@ function ChatComponent() {
       console.log('at send message socket ');
      },[sendMessage])
     
-
-       
-
-
-
-
-  // const checkOnlineStatus = (chat) => {
-  //   const chatMember = chat.members.find((member) => member !== user._id);
-  //   const online = onlineUsers.find((user) => user.userId === chatMember)
-  //   return online ? true : false;
-  // };
-
   return (
-    
     <div className="container mx-auto">
       <div className="min-w-full border rounded lg:grid lg:grid-cols-2">
         <div className="border-r border-gray-300 lg:col-span-1 ">
@@ -113,7 +102,7 @@ function ChatComponent() {
                 <div key={chat._id}  onClick={()=>{
                     setCurrentChat(chat)
                 }}>
-                    <Conversation data={chat} currentUserId={userId} />
+                    <Conversation data={chat} currentUserId={hostId} />
                 </div>
            
             ))}
@@ -122,11 +111,11 @@ function ChatComponent() {
         </div>
         <div className='w-full '>
 
-            <ChatBox chat={currentChat} currentUser={userId} setSendMessage={setSendMessage} recieveMessage={recieveMessage}  />
+            <ChatBox chat={currentChat} currentUser={hostId} setSendMessage={setSendMessage} recieveMessage={recieveMessage}  />
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ChatComponent;
+export default Chatcomponent
