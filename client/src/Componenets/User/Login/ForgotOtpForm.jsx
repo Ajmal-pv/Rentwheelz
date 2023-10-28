@@ -27,8 +27,23 @@ const ForgotOTPForm = () => {
     forgotPasswordOtp(values, user)
       .then((res) => {
         if (res.data.status) {
+          function generateRandomToken(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+          
+            for (let i = 0; i < length; i++) {
+              const randomIndex = Math.floor(Math.random() * characters.length);
+              token += characters.charAt(randomIndex);
+            }
+          
+            return token;
+          }
+          
+          const randomToken = generateRandomToken(32);
+          localStorage.setItem('resetToken',randomToken)
+          
           const user1 = res.data.user;
-          navigate(`/password-change?id=${user1}`);
+          navigate(`/password-change?id=${user1}&token=${randomToken}`);
         } else {
           toast.error(res.data.message);
         }

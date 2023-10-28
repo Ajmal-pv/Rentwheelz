@@ -332,5 +332,75 @@ module.exports = {
       console.log(error.message);
       res.status(500).send("Server Error");
     }
+  },
+  paymentData:async (req,res)=>{
+    try {
+      console.log('here');
+      const start = req.query.start // Convert the start date to a Date object
+const end = req.query.end // Convert the end date to a Date object
+console.log('start',start);
+
+const data = await Order.find({
+  status: { $in: ["completed", "Cancelled"] },
+  // startDate: { $gte: start, $lte: end } // Filter by startDate within the specified date range
+})
+  .populate("car")
+  .populate({
+    path: "user",
+    select: "name" 
+  }).populate('host')
+  .sort({ _id: -1 })
+  .lean(); 
+
+  function formatDate(date) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString(undefined, options);
+  }
+  // Perform field selection on the JavaScript objects
+  const selectedData = data.map(item => ({
+    user:  item.user.name ,
+    host: item.host.name ,
+    startDate: formatDate(item.startDate),
+    endDate: formatDate(item.endDate),
+    status: item.status,
+    totalAmount: item.totalAmount,
+    deposit: item.deposit,
+  }));
+      return  res.status(200).json(selectedData)
+      
+    } catch (error) {
+      console.log(error.message);
+     return res.status(500).send("Server Error");
+    }
+  },
+  carRevenue: async(req,res)=>{
+    try {
+     
+      const today = new Date();
+const oneMonthAgo = new Date(today);
+oneMonthAgo.setMonth(today.getMonth() - 1); 
+
+Order.aggregate([
+  {
+    $group:{
+      _id:'$status',
+      count:{$sum:1}
+    }
+  }
+  
+])
+  .then((results) => {
+    console.log(results,'result');
+    return res.status(200).json(results)
+  })
+  .catch((error) => {
+    console.error('Error fetching orders:', error);
+  });
+ 
+
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
   }
 }

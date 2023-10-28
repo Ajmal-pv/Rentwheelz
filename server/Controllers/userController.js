@@ -755,4 +755,22 @@ module.exports = {
       res.status(500).send("Server Error");
     }
   },
+  getWallet: async(req,res)=>{
+    try {
+      const userId= req.query.id
+      const user= await User.findOne({_id:userId})
+      if(user){
+        const wallet = user.wallet
+        res.status(200).json(wallet)
+
+      }else{
+        console.log(error.message);
+        res.status(500).send("Server Error");
+      }
+      
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  }
 };

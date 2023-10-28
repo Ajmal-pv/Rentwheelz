@@ -22,6 +22,6 @@ admin_route.post('/carApproval',adminAuth,adminController.carApproval)
 admin_route.post('/carReject',adminAuth,adminController.carReject)
 admin_route.get('/carbookings',adminAuth,adminController.bookingDetails)
 admin_route.get('/orderedcars',adminAuth,adminController.orderedCars)
-
-
+admin_route.get('/paymentData',adminAuth,adminController.paymentData)
+admin_route.get('/carRevenue',adminAuth,adminController.carRevenue)
 module.exports=admin_route

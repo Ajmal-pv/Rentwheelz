@@ -29,13 +29,21 @@ const NewPasswordForm = () => {
   const handleSubmit = (values, { setSubmitting }) => {
     const queryParams = new URLSearchParams(location.search);
     const user = queryParams.get("id");
+    const token = queryParams.get('token')
+
+const storedToken = localStorage.getItem('resetToken') 
+
+if(token===storedToken){
+
     newPassword(values, user)
       .then((res) => {
         if (res.data.status) {
+          localStorage.removeItem('resetToken')
           navigate("/login");
         }
       })
       .catch((error) => {
+        localStorage.removeItem('resetToken')
         if (error.response) {
           // The request was made and the server responded with an error status code
           if (error.response.status === 500) {
@@ -49,7 +57,11 @@ const NewPasswordForm = () => {
           // The request was made but no response was received
           toast.error('Network Error. Please check your internet connection.');
         }
-      });
+      })
+    }else{
+        toast.error('you cant update password')
+        navigate('/login')
+      }
     setSubmitting(false);
   }
 

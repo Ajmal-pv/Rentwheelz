@@ -33,15 +33,19 @@ function Sidebar() {
   return (
     
     
-    <div>
+    <div className='w-[15vw] fixed'>
      
-    <aside className="w-64 bg-gray-800 text-white h-screen flex flex-col">
+    <aside className="w-full bg-gray-800 text-white h-screen flex flex-col">
       <div className="p-4 mb-12 mt-6">
         <h2 className="text-2xl font-semibold">Rent Wheelz</h2>
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
-          
+        <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host",'/host/home']) ? "bg-slate-500" : ""}`}>
+            <Link to="/host" className="block text-l">
+              Home
+            </Link>
+          </li>
           <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/host/cars",'/host/cardetails']) ? "bg-slate-500" : ""}`}>
             <Link to="/host/cars" className="block text-l">
               Cars

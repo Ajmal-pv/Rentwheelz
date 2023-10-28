@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const User = require("../models/user");
 const nodemailer = require("nodemailer");
+const mongoose = require('mongoose')
+const ObjctId = mongoose.Types.ObjectId;
 
 const otpStorage = {};
 const SMTP_USER = process.env.SMTP_USER;
@@ -149,9 +151,8 @@ module.exports = {
   carAdd: async (req, res) => {
     try {
       console.log(req.body, "hereee");
-      const { values, downloadedUrls, host, downloadDocumentUrls, query } =
-        req.body;
-      console.log(host);
+      const { values, downloadedUrls, host, downloadDocumentUrls, query,documentType } = req.body
+      console.log(host,'jjjjjjj');
 
       const hostFind = await Host.findOne({ _id: host });
 
@@ -173,6 +174,7 @@ module.exports = {
         transmissionType: values.transmissionType,
         images: downloadedUrls,
         RcImages: downloadDocumentUrls,
+        RcType:documentType
       });
       const carData = await newCar.save();
 
@@ -365,6 +367,71 @@ module.exports = {
       res.send({ Bookings: hostCars, status: true });
     }
       
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+  },
+  barchart : async(req,res)=>{
+try {
+  const aggregatedData = await Order.aggregate([
+    {
+      $match: {
+        $or: [{ status: 'completed' }, { status: 'Cancelled' }],
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$startDate' } },
+        completedCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
+        },
+        cancelledCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Cancelled'] }, 1, 0] },
+        },
+      },
+    },
+  ]);
+
+  if(aggregatedData){
+    res.status(200).json(aggregatedData)
+  }
+} catch (error) {
+  console.log(error.message);
+  res.status(500).send("Server Error");
+}
+  },
+  carRevenue: async(req,res)=>{
+    try {
+      const hostId=req.query.id
+      const objId =new ObjctId(hostId)
+      const today = new Date();
+const oneMonthAgo = new Date(today);
+oneMonthAgo.setMonth(today.getMonth() - 1); 
+
+Order.aggregate([
+  {
+    $match: {
+      host: objId, // Convert hostId to ObjectId
+    },
+  },
+  {
+    $group:{
+      _id:'$status',
+      count:{$sum:1}
+    }
+  }
+  
+])
+  .then((results) => {
+    console.log(results,'result');
+    return res.status(200).json(results)
+  })
+  .catch((error) => {
+    console.error('Error fetching orders:', error);
+  });
+ 
+
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server Error");

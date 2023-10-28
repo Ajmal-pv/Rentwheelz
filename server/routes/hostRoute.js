@@ -18,6 +18,8 @@ host_route.post('/rentcar',hostAuth,hostController.carRent)
 host_route.get('/Bookedcars',hostAuth,hostController.Bookedcars)
 host_route.post('/cancelbooking',hostAuth,hostController.cancelBooking)
 host_route.get('/orderedcars',hostAuth,hostController.paymentsCar)
+host_route.get('/barcharts',hostAuth,hostController.barchart)
+host_route.get('/carRevenue',hostAuth,hostController.carRevenue)
 
 
 module.exports = host_route;

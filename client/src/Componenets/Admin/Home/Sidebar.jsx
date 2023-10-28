@@ -33,16 +33,21 @@ const Sidebar = () => {
     }
   }, [logout]);
   return (
-    <div>
+    <div className="w-[15vw] fixed">
      
-    <aside className="w-64 bg-gray-800 text-white h-screen flex flex-col">
+    <aside className="w-full bg-gray-600 text-white h-screen flex flex-col">
       <div className="p-4 mb-12 mt-6">
         <h2 className="text-xl font-semibold">Rent Wheelz</h2>
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
+        <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin","/admin/dashboard"]) ? "bg-slate-500" : ""}`}>
+            <Link to="/admin" className="block">
+              Dashboard
+            </Link>
+          </li>
         
-          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin","/admin/car",'/admin/car/cardetails']) ? "bg-slate-500" : ""}`}>
+          <li className={`p-4 hover:bg-slate-500 ${isActiveLink(["/admin/car",'/admin/car/cardetails']) ? "bg-slate-500" : ""}`}>
             <Link to="/admin/car" className="block">
               Cars
             </Link>

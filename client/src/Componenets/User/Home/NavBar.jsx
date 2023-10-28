@@ -8,10 +8,13 @@ import { Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 
+import { getWallet, getwallet } from "../../../services/user-Service";
+
 const Navbar = () => {
   const { SubMenu } = Menu;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userId =localStorage.getItem('userId')
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [logout, setLogout] = useState(false);
@@ -74,14 +77,21 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleWallet = ()=>{
-      
+  const handleWallet = async ()=>{
+    const walletfunction = await getwallet(userId).then((res)=>{
+                 
       Swal.fire({
         title: 'Wallet Balance',
-        text: `Your wallet balance is ${userDetails}`,
+        text: `Your wallet balance is ${res.data}`,
         icon: 'info',
         confirmButtonText: 'Close',
       });
+
+    }).catch((error)=>{
+     alert(error)
+    })
+      
+    
     };
   
 

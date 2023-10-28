@@ -27,8 +27,9 @@ const carSchema = new mongoose.Schema({
   startDate: { type: Date },
   endDate: { type: Date },
   isCarRented: { type: Boolean, default: false },
-  slotCompleted :{type: Boolean, default:false}
-});
+  slotCompleted :{type: Boolean, default:false},
+  RcType:{type:String},
+})
 
 const Car = mongoose.model("Car", carSchema);
 

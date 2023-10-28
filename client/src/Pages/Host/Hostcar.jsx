@@ -5,11 +5,16 @@ import Car from '../../Componenets/Host/Car/Car'
 function Hostcar() {
     
   return (
-    <div className="flex h-screen bg-gray-100">
-    <Sidebar/> 
-    <Car/>
-  
-   </div>
+    <div className="flex bg-gray-100 w-[100vw]">
+      <div className="w-full flex">
+        <div className="w-[15vw] h-[100vh]   ">
+          <Sidebar />
+        </div>
+        <div className="w-[85vw] flex-1  ">
+          <Car />
+        </div>
+      </div>
+    </div>
   )
 }
 

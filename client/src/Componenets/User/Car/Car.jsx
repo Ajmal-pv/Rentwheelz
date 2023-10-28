@@ -10,6 +10,13 @@ import { Toaster, toast } from 'react-hot-toast'
 
 
 function Car() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2
+  const startIndex = (currentPage - 1) * itemsPerPage
+ 
+  const endIndex= startIndex + itemsPerPage
+  
+
 
   const [isOpenBrand, setIsOpenBrand] = useState(false)
   const [isOpenColor, setIsOpenColor] = useState(false);
@@ -80,6 +87,7 @@ function Car() {
     
    
     const [allcar,setAllcar]=useState([])
+    const [displayedCars,setDisplayedCars]=useState([])
     const[cars1,setCars1]=useState(allcar)
     const [location, setLocation] = useState('');
     const [brands, setBrands] = useState('');
@@ -87,6 +95,7 @@ function Car() {
     const [colors, setColors] = useState('');
     const [startDate,setStartDate]=useState('')
     const [endDate,setEndDate]=useState('')
+
 
   
     const handleLocationChange = (newLocation) => {
@@ -103,6 +112,9 @@ function Car() {
    setBrands(res.data.result.distinctBrands)
    setModels(res.data.result.distinctModels)
    setColors(res.data.result.distinctColors)
+   setDisplayedCars(res.data.cars.slice(startIndex, endIndex))
+
+   
         }
       }).catch((error)=>{
         if (error.response) {
@@ -121,7 +133,7 @@ function Car() {
       })
     
       
-    }, [])
+    }, [startIndex,endIndex])
 
     useEffect(() => {
       // Apply filters when filter options change
@@ -144,13 +156,19 @@ function Car() {
           return (
             carStartDate <= new Date(startDate) &&
             carEndDate >= new Date(endDate) &&
-            car.city.toLowerCase() === location.toLowerCase()
+            car.pickUpArea.toLowerCase() === location.toLowerCase()
           );
         });
        setCars1(filtered1)
+       setDisplayedCars(filtered1.slice(startIndex, endIndex))
+
+
 
       }else{
-        setCars1(filtered);
+        setCars1(filtered)
+
+        setDisplayedCars(filtered.slice(startIndex, endIndex))
+
       }
   
       
@@ -191,7 +209,26 @@ function Car() {
     
     
     
+    const totalPages = Math.ceil(cars1.length/itemsPerPage);
+
+const goToPreviousPage = () => {
+  if (currentPage > 1) {
     
+    setCurrentPage(currentPage - 1)
+    filterCars()
+   
+  }
+};
+
+const goToNextPage = () => {
+  if (currentPage < totalPages) {
+    
+    setCurrentPage(currentPage + 1)
+    filterCars()
+   
+  }
+};
+
     
   
   
@@ -369,7 +406,7 @@ function Car() {
     </div>
     <div className="flex flex-wrap w-full ">
       {cars1.length >0 ? (
-      cars1?.map((car) => (
+      displayedCars?.map((car) => (
         <Link to={`cardetails?id=${car._id}`}>
       <div key={car._id}  className="relative m-6 h-[60vh] flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
         <div className="relative w-full   flex h-60 overflow-hidden rounded-md" >
@@ -409,6 +446,7 @@ function Car() {
         </div>
       </div>
       </Link>
+      
         ))
   ): (
     <p>No cars available.</p>
@@ -416,6 +454,21 @@ function Car() {
       }
         
       </div>
+      <div className="flex justify-center items-center space-x-4 mt-4">
+  <button onClick={goToPreviousPage} disabled={currentPage === 1}
+  className={`px-2 py-1 bg-blue-500 text-white rounded ${
+    currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+  } transition duration-300 ease-in-out`} >
+    Previous
+  </button>
+  <span>{`Page ${currentPage} of ${totalPages}`}</span>
+  <button onClick={goToNextPage} disabled={currentPage === totalPages} className={`px-2 py-1 bg-blue-500 text-white rounded ${
+      currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+    } transition duration-300 ease-in-out`}>
+    Next
+  </button>
+</div>
+
 
 
 

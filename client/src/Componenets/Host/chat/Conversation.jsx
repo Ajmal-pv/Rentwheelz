@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getUser, gethost } from '../../../services/user-Service'
+import { getUser } from '../../../services/user-Service'
 
 function Conversation({data,currentUserId}) {
     const[userData,setUserData]=useState()
@@ -7,7 +7,7 @@ function Conversation({data,currentUserId}) {
         const hostId=data.members.find((id)=>id !== currentUserId)
         const getUserData=async()=>{
             try {
-                const {data}= await gethost(hostId)
+                const {data}= await getUser(hostId)
            setUserData(data)
             } catch (error) {
                 console.log(error);

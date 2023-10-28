@@ -4,13 +4,16 @@ import User from '../../Componenets/Admin/user/User'
 
 function AdminUser() {
   return (
-    <div>
-    <div className="flex h-screen bg-gray-100">
-   <Sidebar/>
-   <User/>
-  
+    <div className="flex bg-gray-100 w-[100vw]">
+    <div className="w-full flex">
+      <div className="w-[15vw] h-[100vh]   ">
+        <Sidebar />
+      </div>
+      <div className="w-[85vw] flex-1  ">
+        <User />
+      </div>
+    </div>
   </div>
-</div>
   )
 }
 

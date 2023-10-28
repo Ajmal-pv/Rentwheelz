@@ -19,6 +19,8 @@ user_route.post('/password-set',userController.passwordSet)
 user_route.get('/specialCars',userController.specialCar)
 user_route.get('/getuser',userController.getUser)
 user_route.get('/gethost',userController.getHost)
+user_route.get('/getwallet',userController.getWallet)
+
 
 
 

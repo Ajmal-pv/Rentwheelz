@@ -21,30 +21,35 @@ const ForgotPasswordForm = () => {
   
 
   const handleSubmit = (values, { setSubmitting }) => {
-    forgotPassword(values)
-      .then((res) => {
-        if (res.data.status) {
-          const user_id = res.data.user;
-          
-       
-          navigate(`/forgot-otp?idu=${user_id}`);
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with an error status code
-          if (error.response.status === 500) {
-            // Internal Server Error occurred
-            navigate('/serverError')
-          } else {
-            // Handle other non-500 errors here, if needed
-            toast.error(error.response.data.message);
-          }
-        } else {
-          // The request was made but no response was received
-          toast.error('Network Error. Please check your internet connection.');
-        }
-      });
+
+  forgotPassword(values)
+  .then((res) => {
+    if (res.data.status) {
+
+      const user_id = res.data.user;
+      
+   
+      navigate(`/forgot-otp?idu=${user_id}`);
+    }
+  })
+  .catch((error) => {
+    if (error.response) {
+      // The request was made and the server responded with an error status code
+      if (error.response.status === 500) {
+        // Internal Server Error occurred
+        navigate('/serverError')
+      } else {
+        // Handle other non-500 errors here, if needed
+        toast.error(error.response.data.message);
+      }
+    } else {
+      // The request was made but no response was received
+      toast.error('Network Error. Please check your internet connection.');
+    }
+  });
+
+
+   
 
     setSubmitting(false);
   };

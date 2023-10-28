@@ -54,6 +54,9 @@ export const gethost=(hostId)=>{
 export const getUsers=(userId)=>{
   return api.get(`/getusers?id=${userId}`)
 }
+export const getwallet=(userId)=>{
+  return api.get(`/getwallet?id=${userId}`)
+}
 
 
 export const orderCreation=(orderData)=>{

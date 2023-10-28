@@ -13,6 +13,7 @@ import { hostLogin } from "../../../store/hostSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import CarLocation from "../../User/Car/CarLocation";
+import { Document, Page, pdfjs } from 'react-pdf'; 
 
 
 
@@ -33,6 +34,7 @@ function NewCarForm({ isOpen, onClose }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const [documentType,setDocumentType]=useState('')
 
   // const handleImageChange = (e) => {
   //   const files = Array.from(e.target.files);
@@ -79,25 +81,34 @@ function NewCarForm({ isOpen, onClose }) {
   //   setSelectedDocuments(files);
   // };
   const handleDocumentChange = (e)=>{
+    setDocumentType('')
     const files= Array.from(e.target.files);
      // Define the allowed image types
-     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
   
      // Filter out files that are not valid image types
      const areAllValid = files.every((file) => allowedTypes.includes(file.type));
    
+
+   
    
      if (!areAllValid) {
-      
-       // Display an error message or take appropriate action for invalid files
-       console.error('Some selected files are not valid image types.');
-       setSelectedDocuments([])
-     return toast.error('Some selected files are not valid image types.')
+         // Display an error message or take appropriate action for invalid files
+    console.error('Some selected files are not valid image or PDF types.');
+    setSelectedDocuments([]);
+    return toast.error('Some selected files are not valid image or PDF types.');
      
  
      }
      else{
-  
+      
+      const arepdf = files.every((file) => {
+       return file.type === 'application/pdf';
+     })
+     if(arepdf){
+      setDocumentType('pdf')
+     }
+
       setSelectedDocuments(files)
    }
   }
@@ -166,7 +177,7 @@ function NewCarForm({ isOpen, onClose }) {
    Promise.all(uploadPromises)
   .then(() => {
         
-        return  addCar(values,query, downloadUrls, host,downloadDocumentUrls)})
+        return  addCar(values,query, downloadUrls, host,downloadDocumentUrls,documentType)})
             .then((res) => {
                 
               if (res.data.status) {
@@ -571,7 +582,7 @@ function NewCarForm({ isOpen, onClose }) {
                 required
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium">
                 RC Previews:
               </label>
@@ -586,7 +597,22 @@ function NewCarForm({ isOpen, onClose }) {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
+               <div className="mb-4">
+          <label className="block text-sm font-medium">File Previews:</label>
+          <div className="flex flex-wrap space-x-2">
+            {selectedDocuments.map((file, index) => (
+              <div key={index} className="relative">
+                {documentType === 'pdf' ? (
+                  <>
+                  </>
+                ) : (
+                  <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} className="w-24 h-24 object-cover border rounded" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
             <div className="flex justify-center mt-4">
               <button

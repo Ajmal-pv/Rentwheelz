@@ -13,7 +13,7 @@ function Host() {
     });
   }, [hosts]);
   return (
-    <main className="flex-1 p-4 overflow-x-hidden">
+    <main className="flex-1  p-5 overflow-x-auto w-full">
       {/* Your main content goes here */}
       <div className=" transition-colors">
         <h1 className="text-2xl font-semibold  mb-8 mt-6 border-gray-800 ">

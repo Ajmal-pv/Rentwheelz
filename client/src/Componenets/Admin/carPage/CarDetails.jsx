@@ -153,7 +153,7 @@ function CarDetails() {
   
 
   return (
-    <div className=" w-full p-4 ">
+    <div className="flex-1  p-5 overflow-x-auto w-full">
       <h1 className=" ml-4  mb-8 mt-6 font-semibold   border-gray-800 text-2xl">
         CAR DETAILS
       </h1>
@@ -256,17 +256,37 @@ function CarDetails() {
         </Carousel>
       ) : car.RcImages && (
         <Carousel className="w-full h-80 mt-6" showThumbs={false}>
-          {/* Render your RC images here */}
-          {car.RcImages.map((image, index) => (
-            <div key={index} className="w-full h-80">
-              <img
-                src={image}
-                alt={`Car Image ${index}`}
-                className="w-full h-80"
-              />
+      {/* Render your RC images here */}
+      {car?.RcType ==='pdf'?(
+        <div>
+      {car.RcImages.map((image, index) => (
+       
+          <div key={index} className="w-full h-80">
+      
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" onClick={()=>{
+            window.open(image,'blank')
+          }}>
+            click here
+          </button>
+                
+             
             </div>
-          ))}
-        </Carousel>
+      ))}
+       </div>
+      ):
+      <div>
+      {car.RcImages.map((image, index) => (
+         <div key={index} className="w-full h-80">
+         <img
+           src={image}
+           alt={`Car Image ${index}`}
+           className=" h-80 "
+         />
+       </div>
+      ))}
+       </div>
+      }
+    </Carousel>
       )}
     </div>
         {car.hostId && (

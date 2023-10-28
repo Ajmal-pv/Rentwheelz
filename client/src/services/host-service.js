@@ -9,9 +9,9 @@ export const hostVerify=(typeOtp,name,email,password,mobile)=>{
     return api.post('/verifyHost',{otp:typeOtp,name,email,password,mobile },{withCredentials:true})
 }
 
- export const addCar=(values,query,downloadedUrls,host,downloadDocumentUrls)=>{
+ export const addCar=(values,query,downloadedUrls,host,downloadDocumentUrls,documentType)=>{
     
-    return api.post('/Addcar',{values,query,downloadedUrls,host,downloadDocumentUrls},{withCredentials:true})
+    return api.post('/Addcar',{values,query,downloadedUrls,host,downloadDocumentUrls,documentType},{withCredentials:true})
 }
 export const RentCar=(carId,startDate,endDate)=>{
     
@@ -35,7 +35,12 @@ export const hostCar =(hostId)=>{
   export const orderFind =(hostId)=>{
     return api.get(`/orderedcars?id=${hostId}`)
   }
+  export const barChart=()=>{
+    return api.get('/barcharts')
+  }
   export const cancelBooking=(BookingId,reason)=>{
     return api.post('/cancelbooking', {BookingId,reason }, { withCredentials: true })
   }
- 
+  export const  carRevenue =(hostId)=>{
+    return api.get(`/carRevenue?id=${hostId}`)
+  }

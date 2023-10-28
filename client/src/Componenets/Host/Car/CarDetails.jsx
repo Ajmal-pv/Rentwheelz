@@ -3,6 +3,7 @@ import { RentCar, carDetails } from '../../../services/host-service';
 import { useLocation } from 'react-router-dom';
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Document, Page} from 'react-pdf'; 
 
 function CarDetails() {
     const location = useLocation();
@@ -42,6 +43,18 @@ function CarDetails() {
             });
         }
       }, [verificationDone,onclose]);
+      
+      function isPDF(url) {
+        return fetch(url, { method: 'HEAD' })
+          .then(response => {
+            const contentType = response.headers.get('content-type');
+            return contentType === 'application/pdf';
+          })
+          .catch(error => {
+            console.error('Error while fetching and checking file type:', error);
+            return false; // Treat it as an image by default
+          });
+      }
 
   return (
     <div className=" w-full p-4 ">
@@ -129,7 +142,7 @@ function CarDetails() {
           showCarImages ? 'bg-gray-400' : 'bg-blue-500'
         } text-white px-3 py-1 rounded`}
       >
-        RC Images
+        RC File
       </button>
     </div>
 
@@ -147,17 +160,37 @@ function CarDetails() {
       </Carousel>
     ) : car.RcImages && (
       <Carousel className="w-full h-80 mt-6" showThumbs={false}>
-        {/* Render your RC images here */}
-        {car.RcImages.map((image, index) => (
+      {/* Render your RC images here */}
+      {car?.RcType ==='pdf'?(
+        <div>
+      {car.RcImages.map((image, index) => ( 
+       
           <div key={index} className="w-full h-80">
-            <img
-              src={image}
-              alt={`Car Image ${index}`}
-              className="w-full h-80"
-            />
-          </div>
-        ))}
-      </Carousel>
+      
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" onClick={()=>{
+            window.open(image,'blank')
+          }}>
+            click here
+          </button>
+                
+             
+            </div>
+      ))}
+       </div>
+      ):
+      <div>
+      {car.RcImages.map((image, index) => (
+         <div key={index} className="w-full h-80">
+         <img
+           src={image}
+           alt={`Car Image ${index}`}
+           className=" h-80 "
+         />
+       </div>
+      ))}
+       </div>
+      }
+    </Carousel>
     )}
   </div>
      
