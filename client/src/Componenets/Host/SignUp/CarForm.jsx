@@ -100,6 +100,7 @@ function CarForm() {
   const queryParams = new URLSearchParams(location.search);
 
   const host = queryParams.get("id");
+  console.log(queryParams)
 
 
   const initialValues = {
@@ -118,7 +119,7 @@ function CarForm() {
   };
 
   const onSubmit = async (values) => {
-    alert('here')
+   
    console.log('hereeeee')
     const imageFiles = selectedImages;
     const documentFiles=selectedDocuments
@@ -157,7 +158,7 @@ function CarForm() {
    Promise.all(uploadPromises)
   .then(() => {
         
-        return  addCar(values,query, downloadUrls, host,downloadDocumentUrls,documentType)})
+        return  addCar(values,query, downloadUrls,host,downloadDocumentUrls,documentType)})
             .then((res) => {
               if (res.data.status) {
                dispatch(hideLoading())
