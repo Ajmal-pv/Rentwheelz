@@ -35,12 +35,12 @@ function Login() {
         localStorage.setItem('hostId', data.id);
         navigate("/host");
       }else{
-        navigate(`/host/carform?id=${data.id}&login=login`)
+        navigate(`https://rentwheelz.vercel.app/host/carform?id=${data.id}&login=login`)
       }
   
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        toast.error(error.response.data);
+        toast.error(error.response.data)
       } else if (error.response && error.response.status === 500) {
         navigate('/serverError');
       }

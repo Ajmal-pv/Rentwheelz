@@ -41,7 +41,7 @@ function SignUp() {
   };
 
   const onSubmit = (values) => {
-    console.log("otpp");
+   
     if (typeOtp === null) return toast.error("no otp");
     const { name, email, password, mobile } = values;
 
