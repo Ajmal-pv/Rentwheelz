@@ -36,10 +36,11 @@ function Login() {
         localStorage.setItem('hostId', data.id);
         navigate("/host");
       }else{
-        navigate(`host/carform?id=${data.id}&login=${par}`)
+        navigate(`host/carform?id=${data.id}`)
       }
   
     } catch (error) {
+      console.log(error)
       if (error.response && error.response.status === 401) {
         toast.error(error.response.data)
       } else if (error.response && error.response.status === 500) {
