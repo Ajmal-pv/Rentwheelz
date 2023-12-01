@@ -28,6 +28,7 @@ function Login() {
     try {
       let res = await login(email, password);
       let data = res.data.HostLOGIN;
+      const par ='login'
    
       if (data.status) {
         dispatch(hostLogin({ hostId: data.id }));
@@ -35,7 +36,7 @@ function Login() {
         localStorage.setItem('hostId', data.id);
         navigate("/host");
       }else{
-        navigate(`https://rentwheelz.vercel.app/host/carform?id=${data.id}&login=login`)
+        navigate(`host/carform?id=${data.id}&login=${par}`)
       }
   
     } catch (error) {
