@@ -11,8 +11,7 @@ const mongoose = require('mongoose')
 const ObjctId = mongoose.Types.ObjectId;
 
 const otpStorage = {};
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
+
 
 function generateOTP(length) {
   const charset = "0123456789"; // You can customize the character set if needed
@@ -55,14 +54,14 @@ module.exports = {
         //     });
         //   })
         //   .catch((err) => console.error(err));
-
+      
         const otp = generateOTP(4);
         otpStorage[email] = otp;
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: SMTP_USER,
-            pass: SMTP_PASS,
+            user:  process.env.SMTP_USER,
+            pass:  process.env.SMTP_PASS,
           },
         });
         const mailOptions = {
