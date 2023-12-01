@@ -8,6 +8,7 @@ const GeneratePDF = ({startDate,endDate}) => {
   
   useEffect(() => {
     // Make an HTTP request to fetch data from the backend
+  
    paymentpdf(startDate,endDate)
       .then((response) => {
         console.log(response);
@@ -15,11 +16,12 @@ const GeneratePDF = ({startDate,endDate}) => {
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
-      });
+      })
   }, []);
 
   const generatePdf = () => {
     // Create a new jsPDF document
+  
     const pdf = new jsPDF();
 
     // Add content to the PDF
@@ -47,7 +49,7 @@ const GeneratePDF = ({startDate,endDate}) => {
 
   return (
     <div>
-      <button onClick={generatePdf}>Generate Sales Report</button>
+      <button className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 m-2 rounded' onClick={generatePdf}>Generate Sales Report</button>
       {/* Other dashboard content */}
     </div>
   );

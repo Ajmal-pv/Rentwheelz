@@ -1,5 +1,5 @@
 import React from 'react'
-import CarForm from '../../Componenets/Host/SignUp/CarForm'
+import CarForm from '../../Componenets/Host/Car/Carform'
 
 
 function HostCarform() {

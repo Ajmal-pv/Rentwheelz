@@ -26,6 +26,15 @@ const orderSchema = new mongoose.Schema({
     refund:{
       Amount:{type:Number},
       method:{type:String}
+    },
+    forAdmin:{
+      Amount:{type:Number},
+      status:{type:Boolean,default:false},
+    
+    },
+    forHost:{
+      Amount:{type:Number},
+      status:{type:Boolean,default:false}
     }
 });
 orderSchema.pre('save', function (next) {

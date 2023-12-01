@@ -339,10 +339,11 @@ module.exports = {
       const start = req.query.start // Convert the start date to a Date object
 const end = req.query.end // Convert the end date to a Date object
 console.log('start',start);
+console.log('end',end);
 
 const data = await Order.find({
   status: { $in: ["completed", "Cancelled"] },
-  // startDate: { $gte: start, $lte: end } // Filter by startDate within the specified date range
+  //  startDate: { $gte: start, $lte: end } // Filter by startDate within the specified date range
 })
   .populate("car")
   .populate({
@@ -357,6 +358,7 @@ const data = await Order.find({
     return new Date(date).toLocaleDateString(undefined, options);
   }
   // Perform field selection on the JavaScript objects
+  console.log(data,'data');
   const selectedData = data.map(item => ({
     user:  item.user.name ,
     host: item.host.name ,
@@ -366,6 +368,7 @@ const data = await Order.find({
     totalAmount: item.totalAmount,
     deposit: item.deposit,
   }));
+  console.log(selectedData,'selected');
       return  res.status(200).json(selectedData)
       
     } catch (error) {

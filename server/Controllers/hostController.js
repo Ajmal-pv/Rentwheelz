@@ -203,11 +203,13 @@ module.exports = {
   },
   hostSignin: async (req, res) => {
     try {
+   
       const  HostLOGIN = {
         token: null,
         name: null,
         id: null,
-        host: null 
+        host: null,
+        status:false
       }
       const { email, password } = req.body;
       const host = await Host.findOne({ email });
@@ -220,6 +222,7 @@ module.exports = {
       const isMatch = await bcrypt.compare(password, host.password);
 
       if (isMatch) {
+      
         // If password matches, create and send a JWT token for authentication
         const token = jwt.sign(
           { id: host._id, role: "host" },
@@ -229,7 +232,9 @@ module.exports = {
           }
         );
 
-       
+  if(host.is_car) {
+    HostLOGIN.status=true
+  }
         HostLOGIN.token = token;
         HostLOGIN.id = host._id;
         HostLOGIN.name = host.name;
@@ -242,7 +247,7 @@ module.exports = {
       return  res.status(401).send('password is wrong ');
       }
     } catch (error) {
-    
+   
      return res.status(500).send("Server Error");
     }
   },

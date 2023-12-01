@@ -137,8 +137,6 @@ function NewCarForm({ isOpen, onClose }) {
   };
 
   const onSubmit = async (values) => {
-  
-    
 
     const imageFiles = selectedImages;
     const documentFiles=selectedDocuments

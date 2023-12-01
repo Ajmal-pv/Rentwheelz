@@ -22,34 +22,31 @@ function Login() {
     password: Yup.string().required("Required!"),
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     const { email, password } = values;
-    login(email, password)
-      .then((res) => {
-        const result = res.data.HostLOGIN;
-        const { is_car} = result.host
-        const login = "login";
-       
-
-        if (is_car) {
-        
-          dispatch(hostLogin({hostId:result.id}));
-          localStorage.setItem('hostToken',result.token);
-          localStorage.setItem('hostId',result.id);
-          
-          navigate("/host");
-
-        } else if (result.status) {
-          navigate(`/host/carform?id=${result.id}&login=${login}`)
-        } else {
-          toast.error(result.message);
-        }
-      })
-      .catch((err) => {
-       
-        toast.error(err);
-      });
+  
+    try {
+      let res = await login(email, password);
+      let data = res.data.HostLOGIN;
+   
+      if (data.status) {
+        dispatch(hostLogin({ hostId: data.id }));
+        localStorage.setItem('hostToken', data.token);
+        localStorage.setItem('hostId', data.id);
+        navigate("/host");
+      }else{
+        navigate(`/host/carform?id=${data.id}&login=login`)
+      }
+  
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        toast.error(error.response.data);
+      } else if (error.response && error.response.status === 500) {
+        navigate('/serverError');
+      }
+    }
   };
+  
 
   const formik = useFormik({
     initialValues,

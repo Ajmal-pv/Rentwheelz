@@ -35,7 +35,7 @@ function Host() {
           <Route path="/cars" element={<Hostcar />} />
           <Route path="/cardetails" element={<HostCarDetail />} />
           <Route path="/carForm" element={<HostCarform />} />
-          <Route path="/carForm" element={<HostCarform />} />
+       
           <Route path="/bookings" element={<HostBooking />} />
           <Route path="/payments" element={<HostPayment />} />
           <Route path="/messages" element={<HostChat />} />

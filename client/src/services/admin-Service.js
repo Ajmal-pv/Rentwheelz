@@ -40,7 +40,7 @@ export const orderFind =()=>{
   return api.get(`/orderedcars`)
 }
 export const paymentpdf =(startDate,endDate)=>{
-  // console.log('start',startDate);
+  
   return api.get(`/paymentData?start=${startDate}&end=${endDate}`)
 }
 export const  carRevenue =()=>{

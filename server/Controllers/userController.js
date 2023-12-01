@@ -455,8 +455,11 @@ module.exports = {
       } = req.body.orderData;
 
       const car = await Car.findOne({ _id: carId });
+      const Amount=TotalAmount-3000
+     const forAdmin= Math.floor(Amount/10)
+     const forHost = Amount-forAdmin
 
-      const order = new Order({
+           const order = new Order({
         startDate: startDate,
         endDate: endDate,
         car: carId,
@@ -467,6 +470,13 @@ module.exports = {
         deposit: 3000,
         totalAmount: TotalAmount,
         paymentMethod: method,
+        forAdmin: {
+          Amount:forAdmin 
+        },
+        forHost: {
+          Amount:forHost 
+        }
+
       });
 
       const orderSave = await order.save();

@@ -11,6 +11,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, storage } from "../../firebase/config";
 import {GoogleMap,useLoadScript,MarkerF} from '@react-google-maps/api'
 import { showLoading,hideLoading } from "../../../store/alertSlice";
+import CarLocation from "../../User/Car/CarLocation";
 
 function CarForm() {
    
@@ -18,17 +19,79 @@ function CarForm() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const [documentType,setDocumentType]=useState('')
+  const [query, setQuery] = useState('');
+
+  
+  const handleLocationChange = (newLocation) => {
+    setQuery(newLocation);
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    console.log("Selected Images:", files); // Debugging log
-    setSelectedImages(files);
+  
+    // Define the allowed image types
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+      'image/tiff',
+      'image/svg+xml',
+      // Add more image types here as needed
+    ];
+  
+    // Filter out files that are not valid image types
+    const areAllValid = files.every((file) => allowedTypes.includes(file.type));
+  
+  
+    if (!areAllValid) {
+     
+      // Display an error message or take appropriate action for invalid files
+      console.error('Some selected files are not valid image types.');
+      setSelectedImages([])
+    return toast.error('Some selected files are not valid image types.')
+    
+
+    }
+    else{
+ 
+     setSelectedImages(files)
+  }
   };
-  const handleDocumentChange = (e) => {
-    const files = Array.from(e.target.files);
-    console.log("Selected Doc:", files); // Debugging log
-    setSelectedDocuments(files);
-  };
+ const handleDocumentChange = (e)=>{
+    setDocumentType('')
+    const files= Array.from(e.target.files);
+     // Define the allowed image types
+     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+  
+     // Filter out files that are not valid image types
+     const areAllValid = files.every((file) => allowedTypes.includes(file.type));
+   
+
+   
+   
+     if (!areAllValid) {
+         // Display an error message or take appropriate action for invalid files
+    console.error('Some selected files are not valid image or PDF types.');
+    setSelectedDocuments([]);
+    return toast.error('Some selected files are not valid image or PDF types.');
+     
+ 
+     }
+     else{
+      
+      const arepdf = files.every((file) => {
+       return file.type === 'application/pdf';
+     })
+     if(arepdf){
+      setDocumentType('pdf')
+     }
+
+      setSelectedDocuments(files)
+   }
+  }
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -43,21 +106,29 @@ function CarForm() {
     
     carModel: "",
     discription:'',
-    city: "",
     fuelType: "petrol",
     kmDriven: "",
     carBrand: "",
     carVariant: "",
     yearOfManufacture: "",
     transmissionType: "manual",
+    monthsOfRenting: "",
     carColor:'',
     RegistrationNumber:''
   };
 
   const onSubmit = async (values) => {
-    console.log("Selected Images:", selectedImages);
+    alert('here')
+   console.log('hereeeee')
     const imageFiles = selectedImages;
     const documentFiles=selectedDocuments
+    if (!imageFiles || imageFiles.length === 0 || !documentFiles || documentFiles.length === 0) {
+      // Handle the error and show an error popup
+      console.error("No files selected.");
+      // Show an error popup (e.g., using a library like toast)
+      toast.error("images selected are wrong type,select images only");
+      return; // Exit the function
+  }
 
 
   dispatch(showLoading())
@@ -86,7 +157,7 @@ function CarForm() {
    Promise.all(uploadPromises)
   .then(() => {
         
-        return  addCar(values, downloadUrls, host)})
+        return  addCar(values,query, downloadUrls, host,downloadDocumentUrls,documentType)})
             .then((res) => {
               if (res.data.status) {
                dispatch(hideLoading())
@@ -106,7 +177,6 @@ function CarForm() {
       carColor: Yup.string().required("Required"),
       discription: Yup.string().required("Required"),
       carModel: Yup.string().required("Required"),
-      city: Yup.string().required("Required"),
       fuelType: Yup.string().required("Required"),
       kmDriven: Yup.string().required("Required"),
       carBrand: Yup.string().required("Required"),
@@ -220,7 +290,7 @@ function CarForm() {
                     <div className="error">{formik.errors.carModel}</div>
                   )}
                 </div>
-
+{/* 
                 <div className="mb-4">
                   <label htmlFor="city" className="block text-sm font-medium">
                     City:
@@ -238,7 +308,17 @@ function CarForm() {
                   {formik.errors.city && formik.touched.city && (
                     <div className="error">{formik.errors.city}</div>
                   )}
-                </div>
+                </div> */}
+                 <div className="mb-4">
+               <label
+                    htmlFor="fuelType"
+                    className="block text-sm font-medium"
+                  >
+                   City
+                  </label>
+                <CarLocation onLocationChange={handleLocationChange}/>
+
+                 </div>
 
                 <div className="mb-4">
                   <label
@@ -270,23 +350,33 @@ function CarForm() {
               </div>
 
               <div>
-                <div className="mb-4">
+              <div className="mb-4">
                   <label
-                    htmlFor="carBrand"
+                    htmlFor="fuelType"
                     className="block text-sm font-medium"
                   >
                     Car Brand:
                   </label>
-                  <input
+                  <select
                     defaultValue={formik.values.carBrand}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
-                    type="text"
                     id="carBrand"
                     name="carBrand"
                     required
                     className="mt-1 p-2 border rounded w-full"
-                  />
+                  >
+                     <option >Select</option>
+                    <option defaultValue="Maruti">Maruti</option>
+                    <option defaultValue="BMW">BMW</option>
+                    <option defaultValue="BENZ">Mercedes-Benz</option>
+                    <option defaultValue="HYUNDAI">HYUNDAI</option>
+                    <option defaultValue="Toyota">Toyota</option>
+                    <option defaultValue="MG">MG</option>
+                    <option defaultValue="Kia">KIA</option>
+                    <option defaultValue="CITREON">Citreon</option>
+
+                  </select>
                   {formik.errors.carBrand && formik.touched.carBrand && (
                     <div className="error">{formik.errors.carBrand}</div>
                   )}
@@ -509,12 +599,9 @@ function CarForm() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              >
-                Submit
-              </button>
+            <button type="submit"  disabled={!formik.isValid} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+  Submit
+</button>
             </div>
           </form>
         </div>
