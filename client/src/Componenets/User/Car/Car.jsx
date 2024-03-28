@@ -445,15 +445,7 @@ const goToNextPage = () => {
           
         </div>
       </div>
-      </Link>
-      
-        ))
-  ): (
-    <p>No cars available.</p>
-  )
-      }
-        
-      </div>
+      { cars1.length > 6 ? (
       <div className="flex justify-center items-center space-x-4 mt-4">
   <button onClick={goToPreviousPage} disabled={currentPage === 1}
   className={`px-2 py-1 bg-blue-500 text-white rounded ${
@@ -468,6 +460,21 @@ const goToNextPage = () => {
     Next
   </button>
 </div>
+      ):(
+        <></>
+      )
+}
+      </Link>
+      
+        ))
+        
+  ): (
+    <p>No cars available.</p>
+  )
+      }
+        
+      </div>
+    
 
 
 

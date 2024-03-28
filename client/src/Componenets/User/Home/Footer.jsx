@@ -22,8 +22,8 @@ function Footer() {
             </div>
             <div className="w-full md:w-1/2 lg:w-2/4 mb-4 md:mb-0">
               <h3 className="text-xl font-semibold mb-2">Contact Us</h3>
-              <p className="text-sm mb-2">BROTOTYPE</p>
-              <p className="text-sm mb-2">KAKKANCHERRY, KERALA,670612</p>
+              <a className="text-sm mb-2" href="https://ajmal-portfolio.vercel.app/">Muhammed Ajmal P V</a>
+              <p className="text-sm mb-2">Kannur, KERALA,670612</p>
               <p className="text-sm mb-2">Email: ajmalpv66@gmail.com</p>
               <p className="text-sm mb-2">Phone: +91 9061992112</p>
             </div>

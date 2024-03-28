@@ -163,7 +163,7 @@ const AdminDashboard = () => {
                         <tr key={booking._id}>
                           <td className="border p-2">{booking.user.name}</td>
                           <td className="border p-2">
-                            {booking.car.RegistrationNumber}
+                            {booking.car}
                           </td>
                           <td className="border p-2">{booking.status}</td>
                           <td className="border p-2">

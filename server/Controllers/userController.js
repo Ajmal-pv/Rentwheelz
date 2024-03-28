@@ -361,9 +361,10 @@ module.exports = {
         }
       }
       if (type == "carDetails") {
-        const carType = await Car.findOne({ _id: carId });
-        const carBrand = carType.carBrand;
-        const BrandCar = await Car.find({ carBrand: carBrand }).limit(4);
+     
+        const BrandCar = await Car.find({ isCarRented: true, _id: { $ne: carId } })
+          .limit(8);
+      
         if (BrandCar) {
           res.json(BrandCar);
         } else {
@@ -385,7 +386,7 @@ module.exports = {
     try {
       const { product, price, carId } = req.body;
 
-      const cancelUrl = `http://localhost:5173/cancel?id=${carId}`;
+      const cancelUrl = `${process.env.frontbaseUrl}/cancel?id=${carId}`;
 
       const session = await stripe.checkout.sessions.create({
         line_items: [
@@ -401,7 +402,7 @@ module.exports = {
           },
         ],
         mode: "payment",
-        success_url: "http://localhost:5173/success",
+        success_url: `${process.env.frontbaseUrl}/success`,
         cancel_url: cancelUrl,
       });
 

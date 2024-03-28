@@ -27,10 +27,10 @@ import Error from "../Pages/error/Error";
 import Checkout from "../Componenets/User/Car/Checkout";
 import UserChat from "../Pages/User/UserChat";
 
+
 function User() {
   return (
-    <div>
-      {/* private route */}
+    <div>    
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -39,9 +39,8 @@ function User() {
         <Route path="/cars/cardetails" element={<UserCarDetails />} />
         <Route path="/cancel" element={<UserCarDetails />} />
 
-        {/* private Route */}
 
-        <Route path="/" element={<PrivateRoute />}>
+        <Route path="/" element={<PrivateRoute />} >
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/success" element={<UserSuccess />} />
           <Route path="/rentedcars" element={<UserOrder />} />
@@ -51,7 +50,6 @@ function User() {
           <Route path="/cars/carpayment" element={<UserPayment />}></Route>
         </Route>
 
-        {/* public routes */}
 
         <Route path="/" element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
@@ -65,7 +63,7 @@ function User() {
         <Route path="/error" element={<Error />} />
         <Route path="*" element={<NotFound redirectTo="/home" />} />
       </Routes>
-      <Toaster />
+      <Toaster /> 
     </div>
   );
 }

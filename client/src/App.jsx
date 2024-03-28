@@ -1,27 +1,22 @@
-import {BrowserRouter as Router,Routes,Route} from 'react-router-dom'
-import User from './Routes/User'
-import Admin from './Routes/Admin'
-import Host from './Routes/Host'
-import { LoadingOverlay } from './constants/Constant';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import User from "./Routes/User";
+import Admin from "./Routes/Admin";
+import { Suspense, lazy } from "react";
+import NotFound from "./Pages/error/NotFound";
 
-
-
+const Host = lazy(() => import("./Routes/Host"));
 
 function App() {
   return (
-    <div>
-    
-   <Router >
-    <LoadingOverlay/>
-    <Routes>
-      <Route  path='/*' element={<User/>}/>
-      <Route path='/admin/*' element={<Admin/>}/>
-      <Route path='/host/*' element={<Host/>}/>
-
-    </Routes>
-
-   </Router>
-  </div>
+    <Router>
+      <Routes>
+        <Route path="/*" element={<User />} />
+        <Route path="/host/*" element={<Suspense fallback={<h1>Loading..</h1>}><Host /></Suspense>} />
+        <Route path="/admin/*" element={<Admin />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 

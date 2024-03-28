@@ -266,43 +266,41 @@ const CarDetails = () => {
                 </span>
                <CarLocation onLocationChange={ handleLocationChange} />
               </div>
-              <div className="flex items-center mb-4">
-                <span className="text-red-600 text-l mr-2">
-                  Rental Period:
-                </span>
-                
-                <DatePicker
-                  className=" font-semibold ml-2 rounded-lg border  px-3 py-2 bg-slate-300"
-                  selected={startDate}
-                  onChange={(date) => {
-                    const formattedDate = moment(date).set({ hour: 9, minute: 0, second: 0, millisecond: 0 })
-                    setStartDate(formattedDate.toDate())
-                  }}
-                  minDate={new Date()}
-                  filterDate={isDateDisabled} // Use a custom function to disable specific dates
-                  showDisabledMonthNavigation
-                  placeholderText="dd-mm-yyyy"
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                />
-                <span className="text-black font-semibold m-2">to</span>
-               
-                <DatePicker
-                  className="font-semibold ml-2 rounded-lg border px-3 py-2 bg-slate-300"
-                  selected={endDate}
-                  onChange={(date) => {
-                    const formattedDate = moment(date).set({ hour: 21, minute: 0, second: 0, millisecond: 0 })
+              <div className="flex items-center mb-4 flex-col sm:flex-row gap-2">
+  <span className="text-red-600 text-l">Rental Period:</span>
 
-                   
-                    setEndDate(formattedDate.toDate())}}
-                  minDate={new Date()}
-                  filterDate={isDateDisabled} // Use a custom function to disable specific dates
+  <DatePicker
+    className="font-semibold rounded-lg border px-3 py-2 bg-slate-300"
+    selected={startDate}
+    onChange={(date) => {
+      const formattedDate = moment(date).set({ hour: 9, minute: 0, second: 0, millisecond: 0 });
+      setStartDate(formattedDate.toDate());
+    }}
+    minDate={new Date()}
+    filterDate={isDateDisabled} // Your custom function to disable specific dates
+    showDisabledMonthNavigation
+    placeholderText="dd-mm-yyyy"
+    dateFormat="MMMM d, yyyy h:mm aa"
+    width="100%" // Ensure responsive width
+  />
 
-                  showDisabledMonthNavigation
-                  placeholderText="dd-mm-yyyy"
-                  dateFormat="MMMM d, yyyy h:mm aa"
+  <span className="text-black font-semibold m-2 sm:m-0">to</span>
 
-                />
-              </div>
+  <DatePicker
+    className="font-semibold rounded-lg border px-3 py-2 bg-slate-300"
+    selected={endDate}
+    onChange={(date) => {
+      const formattedDate = moment(date).set({ hour: 21, minute: 0, second: 0, millisecond: 0 });
+      setEndDate(formattedDate.toDate());
+    }}
+    minDate={new Date()}
+    filterDate={isDateDisabled} // Your custom function to disable specific dates
+    showDisabledMonthNavigation
+    placeholderText="dd-mm-yyyy"
+    dateFormat="MMMM d, yyyy h:mm aa"
+    width="100%" // Ensure responsive width
+  />
+</div>
 
               {price && (
                 <div className="flex items-center mb-4">

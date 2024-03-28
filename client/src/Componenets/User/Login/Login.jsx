@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
@@ -7,13 +7,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { userLogin } from "../../../store/userSlice";
 
-import { userAxiosInstance as api } from "../../../axios/Axios";
-import { RadiusBottomrightOutlined } from "@ant-design/icons";
 
+import { userAxiosInstance as api } from "../../../axios/Axios";
+import {EyeOutlined, EyeInvisibleOutlined  } from "@ant-design/icons";
 
 function Login() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [mode, setMode] = useState("user");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleModeSwitch = () => {
+    setMode(mode === "user" ? "admin" : "user");
+  };
   const initialValues = {
     email: "",
     password: "",
@@ -24,24 +30,28 @@ function Login() {
   });
   const onSubmit = (values) => {
     const { email, password } = values;
-    api.post("/signin", { email, password }, { withCredentials: true })
-         .then((res) => {
+    api
+      .post("/signin", { email, password }, { withCredentials: true })
+      .then((res) => {
         const result = res.data.userLOGIN;
         if (result.status) {
-         const id1=result.id
-          localStorage.setItem('userData',JSON.stringify({
-            name: result.name,
-            id: result.id,
-            email: result.email,
-            mobile: result.mobile,
-            host:result.host,
-            wallet:result.wallet
-          }));
-          
-          localStorage.setItem('userToken',result.token)
-          localStorage.setItem('userId',result.id)
+          const id1 = result.id;
+          localStorage.setItem(
+            "userData",
+            JSON.stringify({
+              name: result.name,
+              id: result.id,
+              email: result.email,
+              mobile: result.mobile,
+              host: result.host,
+              wallet: result.wallet,
+            })
+          );
 
-          dispatch(userLogin({userId:id1}));
+          localStorage.setItem("userToken", result.token);
+          localStorage.setItem("userId", result.id);
+
+          dispatch(userLogin({ userId: id1 }));
 
           navigate("/");
         } else {
@@ -53,18 +63,17 @@ function Login() {
           // The request was made and the server responded with an error status code
           if (error.response.status === 500) {
             // Internal Server Error occurred
-            navigate('/serverError')
-          } else if(error.response.status === 400) {
+            navigate("/serverError");
+          } else if (error.response.status === 400) {
             // Handle other non-500 errors here, if needed
             toast.error(error.response.data.message);
-            navigate('/login')
+            navigate("/login");
           }
         } else {
           // The request was made but no response was received
-          toast.error('Network Error. Please check your internet connection.');
+          toast.error("Network Error. Please check your internet connection.");
         }
       });
-
   };
 
   const formik = useFormik({
@@ -72,22 +81,20 @@ function Login() {
     onSubmit,
     validationSchema,
   });
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
   return (
-    <div  >
+    <div>
       <section className="bg-blue gray-50">
         <div className="flex justify-center items-center h-screen w-full lg:w-4/12 px-4 mx-auto pt-6">
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
             <div className="rounded-t shadow-lg-t mb-0 px-6 py-6">
               <div className="text-center mb-3">
-                <h6 className="text-blueGray-500 text-xl font-bold">
-                  LOGIN
-                </h6>
+                <h6 className="text-blueGray-500 text-xl font-bold">LOGIN</h6>
               </div>
-             
-             
             </div>
             <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-             
               <form onSubmit={formik.handleSubmit}>
                 <div className="relative w-full mb-3">
                   <label
@@ -118,15 +125,24 @@ function Login() {
                   >
                     Password
                   </label>
-                  <input
-                    onChange={formik.handleChange}
-                    defaultValue={formik.values.password}
-                    onBlur={formik.handleBlur}
-                    type="password"
-                    name="password"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="Password"
-                  />
+                  <div className="relative">
+                    <input
+                      onChange={formik.handleChange}
+                      defaultValue={formik.values.password}
+                      onBlur={formik.handleBlur}
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 pr-10"
+                      placeholder="Password"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTogglePassword}
+                      className="absolute inset-y-0 right-0 px-3 py-3 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring ease-linear transition-all duration-150"
+                    >
+                       {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                    </button>
+                  </div>
                   {formik.touched.password && formik.errors.password ? (
                     <div className="text-red-600 pl-2">
                       {formik.errors.password}
@@ -138,7 +154,11 @@ function Login() {
                     <label className="inline-flex items-center cursor-pointer">
                       <span className="ml-2 text-sm font-semibold text-blueGray-600">
                         {" "}
-                        <Link to={'/forgot-password'} style={{ color: "blue" }  } className=" hover:underline ml-2" >
+                        <Link
+                          to={"/forgot-password"}
+                          style={{ color: "blue" }}
+                          className=" hover:underline ml-2"
+                        >
                           Forgot Password
                         </Link>
                       </span>
@@ -150,10 +170,10 @@ function Login() {
                         {" "}
                         Don't have an account ?
                         <Link
-                         to={'/signup'} style={{ color: "blue" }  }
-                         className="text-blue-600 hover:underline ml-2"
+                          to={"/signup"}
+                          style={{ color: "blue" }}
+                          className="text-blue-600 hover:underline ml-2"
                         >
-                          
                           Sign Up
                         </Link>
                       </span>
@@ -163,7 +183,7 @@ function Login() {
                 <div className="text-center mt-6">
                   <button
                     type="submit"
-                    className="bg-gray-950 hover:bg-gray-700 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                    className="bg-gray-950 hover:opacity-70 text-white active:opacity-30 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   >
                     LogIn
                   </button>
@@ -178,4 +198,4 @@ function Login() {
   );
 }
 
-export default Login
+export default Login;

@@ -12,7 +12,7 @@ function HomePage() {
   return (
     <div>
       <NavBar />
-      <Banner />
+      <Banner  />
       <RelatedCar />
       <Footer/>
       
