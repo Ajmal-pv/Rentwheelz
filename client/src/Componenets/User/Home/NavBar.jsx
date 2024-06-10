@@ -148,7 +148,7 @@ const Navbar = () => {
   <div className="flex space-x-4 h-full ">
     <div className="hidden md:flex space-x-10 ">
       <Link
-        to="/cars"
+        to="/"
         className="text-gray-950 p-2 hover:border-b-2 hover:border-t-2 border-transparent hover:border-red-900 transition-colors duration-300 text-l"
       >
         HOME

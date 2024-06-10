@@ -103,7 +103,7 @@ function Bookings() {
     bookings1.map((booking) => (
       <tr key={booking._id}>
         <td className="py-4 px-4 border-b border-gray-300">
-          <p>{booking.car.RegistrationNumber}</p>
+          <p>{booking?.car?.RegistrationNumber}</p>
         </td>
         <td className="py-4 px-8 border-b border-gray-300">{booking.user.name}</td>
 

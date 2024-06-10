@@ -75,32 +75,32 @@ function Payments() {
                        {index+1}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                        {booking.user.name}
+                        {booking?.user?.name}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                        {booking.host.name}
+                        {booking?.host?.name}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                      {booking.car.RegistrationNumber}
+                      {booking?.car?.RegistrationNumber}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                    <span>{booking.startDate} to  {booking.endDate}</span>
+                    <span>{booking?.startDate} to  {booking?.endDate}</span>
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                      {booking.status}
+                      {booking?.status}
                       
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                      {booking.totalAmount}
+                      {booking?.totalAmount}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
                       3000
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">
-                        {booking.status === 'completed' ?  (
-                            <span> {booking.totalAmount-3000}</span>
+                        {booking?.status === 'completed' ?  (
+                            <span> {booking?.totalAmount-3000}</span>
                         ):(
-                            <span>{booking.totalAmount-booking.refund.Amount}</span>
+                            <span>{booking?.totalAmount-booking?.refund?.Amount}</span>
                         )}
                      
                       </td>

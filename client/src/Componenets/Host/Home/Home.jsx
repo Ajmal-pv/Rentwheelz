@@ -14,23 +14,23 @@ function Home() {
   const[ongoing,setOngoing]=useState(0)
   const[cancelled,setCancelled]=useState(0)
   const [bookings,setBookings] = useState([])
-  useEffect(()=>{
-    const hostId = localStorage.getItem('hostId')
-      orderFind(hostId).then((res)=>{
-          if (res.data.status) {
-              const formattedBookings = res.data.Bookings.map((booking) => {
+  // useEffect(()=>{
+  //   const hostId = localStorage.getItem('hostId')
+  //     orderFind(hostId).then((res)=>{
+  //         if (res.data.status) {
+  //             const formattedBookings = res.data.Bookings.map((booking) => {
              
-                return {
-                  ...booking,
-                  startDate: new Date(booking.startDate).toLocaleDateString(),
-                  endDate: new Date(booking.endDate).toLocaleDateString(),
-                };
-              });
+  //               return {
+  //                 ...booking,
+  //                 startDate: new Date(booking.startDate).toLocaleDateString(),
+  //                 endDate: new Date(booking.endDate).toLocaleDateString(),
+  //               };
+  //             });
       
-              setBookings(formattedBookings);
-            }
-      })
-  },[])
+  //             setBookings(formattedBookings);
+  //           }
+  //     })
+  // },[])
   
 
   return (

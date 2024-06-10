@@ -14,21 +14,21 @@ const AdminDashboard = () => {
   const [ongoing, setOngoing] = useState(0);
   const [cancelled, setCancelled] = useState(0);
   const [bookings, setBookings] = useState([]);
-  useEffect(() => {
-    orderFind().then((res) => {
-      if (res.data.status) {
-        const formattedBookings = res.data.Bookings.map((booking) => {
-          return {
-            ...booking,
-            startDate: new Date(booking.startDate).toLocaleDateString(),
-            endDate: new Date(booking.endDate).toLocaleDateString(),
-          };
-        });
+  // useEffect(() => {
+  //   orderFind().then((res) => {
+  //     if (res.data.status) {
+  //       const formattedBookings = res.data.Bookings.map((booking) => {
+  //         return {
+  //           ...booking,
+  //           startDate: new Date(booking.startDate).toLocaleDateString(),
+  //           endDate: new Date(booking.endDate).toLocaleDateString(),
+  //         };
+  //       });
 
-        setBookings(formattedBookings);
-      }
-    });
-  }, []);
+  //       setBookings(formattedBookings);
+  //     }
+  //   });
+  // }, [])
 
   return (
     <main className="flex-1  p-5 overflow-x-auto w-full">
@@ -106,28 +106,28 @@ const AdminDashboard = () => {
                 Upcoming Booking
               </div>
               <div className="text-3xl font-bold">{upcoming}</div>{" "}
-              {/* Replace "42" with your actual booking number */}
+              
             </div>
             <div className="flex-grow bg-white p-4 m-4 shadow rounded flex flex-col justify-center items-center">
               <div className="text-xl text-green-400 font-bold">
                 Ongoing Booking
               </div>
               <div className="text-3xl font-bold">{ongoing}</div>{" "}
-              {/* Replace "42" with your actual booking number */}
+           
             </div>
             <div className="flex-grow bg-white p-4 m-4 shadow rounded flex flex-col justify-center items-center">
               <div className="text-xl font-bold text-blue-500">
                 Completed Booking
               </div>
               <div className="text-3xl font-bold">{completed}</div>{" "}
-              {/* Replace "42" with your actual booking number */}
+              
             </div>
             <div className="flex-grow bg-white p-4 m-4 shadow rounded flex flex-col justify-center items-center">
               <div className="text-xl font-bold text-red-500">
                 Cancelled Booking
               </div>
               <div className="text-3xl font-bold">{cancelled}</div>{" "}
-              {/* Replace "42" with your actual booking number */}
+             
             </div>
           </div>
         </div>
@@ -159,7 +159,7 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {bookings.map((booking) => (
+                      {bookings?.map((booking) => (
                         <tr key={booking._id}>
                           <td className="border p-2">{booking.user.name}</td>
                           <td className="border p-2">
@@ -171,11 +171,11 @@ const AdminDashboard = () => {
                           </td>
                           <td className="border p-2">
                             {" "}
-                            {booking.status === "completed" ? (
+                            {booking?.status === "completed" ? (
                               <span> {booking.totalAmount - 3000}</span>
                             ) : (
                               <span>
-                                {booking.totalAmount - booking.refund.Amount}
+                                {booking?.totalAmount - booking.refund.Amount}
                               </span>
                             )}
                           </td>
