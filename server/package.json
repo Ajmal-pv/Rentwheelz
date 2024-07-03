@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon index.js"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^7.0.1",
-    "@vonage/server-sdk": "^3.6.0",
+    "@vonage/server-sdk": "^3.15.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "cloudinary": "^1.40.0",
@@ -30,6 +30,6 @@
     "socket.io": "^4.7.2",
     "speakeasy": "^2.0.0",
     "stripe": "^13.5.0",
-    "sweetalert2": "^11.7.27"
+    "sweetalert2": "^11.6.13"
   }
 }
