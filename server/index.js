@@ -25,7 +25,7 @@ mongoose.connection.on('error', (err) => {
 
 app.use(cookieParser());
 app.use(cors({
-  origin: [frontend],
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST'],
  
